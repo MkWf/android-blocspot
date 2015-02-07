@@ -3,11 +3,13 @@ package com.bloc.blocspot.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.TextView;
 
+import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.blocspot.R;
 
 /**
@@ -15,21 +17,21 @@ import com.bloc.blocspot.blocspot.R;
  */
 public class MainActivity extends Activity {
 
-    Menu menu;
+    private Menu menu;
+    private ItemAdapter itemAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.point_item);
+        setContentView(R.layout.activity_main);
 
-        TextView location = (TextView) findViewById(R.id.point_item_location);
-        TextView note = (TextView) findViewById(R.id.point_item_note);
-        TextView distance = (TextView) findViewById(R.id.point_item_distance);
-        CheckBox checkbox = (CheckBox) findViewById(R.id.point_item_checkbox);
+        itemAdapter = new ItemAdapter();
 
-        location.setText("Grill Baby, Grill");
-        note.setText("Looks like fun, Karen said she had a blast at this place");
-        distance.setText("<1 mi");
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(itemAdapter);
     }
 
     @Override
