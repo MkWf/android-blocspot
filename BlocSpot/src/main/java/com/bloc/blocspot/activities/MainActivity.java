@@ -19,11 +19,10 @@ import com.bloc.blocspot.blocspot.R;
 /**
  * Created by Mark on 2/6/2015.
  */
-public class MainActivity extends Activity implements ItemAdapter.Delegate {
+public class MainActivity extends Activity implements ItemAdapter.Delegate, PopupMenu.OnMenuItemClickListener{
 
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +63,28 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate {
     public void onPopupMenuClicked(ItemAdapter itemAdapter, View view){
         PopupMenu popMenu = new PopupMenu(this, view);
         getMenuInflater().inflate(R.menu.popup_menu, popMenu.getMenu());
+        popMenu.setOnMenuItemClickListener(this);
         popMenu.show();
     }
+
+    public boolean onMenuItemClick (MenuItem item){
+        if(item.getItemId() == R.id.popup_navigate){
+
+            return true;
+        }else if(item.getItemId() == R.id.popup_choose_category){
+
+            return true;
+        }else if(item.getItemId() == R.id.popup_edit_note){
+
+            return true;
+        }else if(item.getItemId() == R.id.popup_delete){
+
+            return true;
+        }
+
+        return false;
+    }
+
 
 
 }

@@ -71,6 +71,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             popupMenu = (ImageButton) itemView.findViewById(R.id.point_item_popup_menu);
             itemView.setOnClickListener(this);
             popupMenu.setOnClickListener(this);
+
         }
 
         void update(PointItem item) {
