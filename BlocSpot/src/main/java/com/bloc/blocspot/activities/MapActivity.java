@@ -196,5 +196,4 @@ public class MapActivity extends Activity {
             locationManager.removeUpdates(listener);
         }
     };
-
 }
