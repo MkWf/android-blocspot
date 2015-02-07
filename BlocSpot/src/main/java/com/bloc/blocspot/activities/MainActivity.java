@@ -8,6 +8,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.bloc.blocspot.adapters.ItemAdapter;
@@ -19,7 +21,7 @@ import com.bloc.blocspot.blocspot.R;
  */
 public class MainActivity extends Activity implements ItemAdapter.Delegate {
 
-    private Menu menu;
+    private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
 
 
@@ -39,8 +41,8 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        this.menu = menu;
+        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        this.actionbarMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -56,6 +58,13 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate {
     @Override
     public void onItemClicked(ItemAdapter itemAdapter, PointItem pointItem){
         Toast.makeText(this, pointItem.getLocation(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPopupMenuClicked(ItemAdapter itemAdapter, View view){
+        PopupMenu popMenu = new PopupMenu(this, view);
+        getMenuInflater().inflate(R.menu.popup_menu, popMenu.getMenu());
+        popMenu.show();
     }
 
 

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bloc.blocspot.BlocSpotApplication;
@@ -20,6 +21,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
 
     public static interface Delegate {
         public void onItemClicked(ItemAdapter itemAdapter, PointItem pointItem);
+        public void onPopupMenuClicked(ItemAdapter itemAdapter, View view);
     }
 
     private WeakReference<Delegate> delegate;
@@ -57,6 +59,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         TextView location;
         TextView note;
         TextView distance;
+        ImageButton popupMenu;
         PointItem item;
 
         public ItemAdapterViewHolder(View itemView) {
@@ -65,7 +68,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             location = (TextView) itemView.findViewById(R.id.point_item_location);
             note = (TextView) itemView.findViewById(R.id.point_item_note);
             distance = (TextView) itemView.findViewById(R.id.point_item_distance);
+            popupMenu = (ImageButton) itemView.findViewById(R.id.point_item_popup_menu);
             itemView.setOnClickListener(this);
+            popupMenu.setOnClickListener(this);
         }
 
         void update(PointItem item) {
@@ -80,6 +85,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             if (view == itemView) {
                 if (getDelegate() != null) {
                     getDelegate().onItemClicked(ItemAdapter.this, item);
+                }
+            }else{
+                if (getDelegate() != null) {
+                    getDelegate().onPopupMenuClicked(ItemAdapter.this, view);
                 }
             }
         }

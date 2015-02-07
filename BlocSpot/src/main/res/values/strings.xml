@@ -7,6 +7,10 @@
     <string name="menu_search">Search</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_map">Map</string>
+    <string name="popup_navigate">Navigate To...</string>
+    <string name="popup_choose_category">Choose Category</string>
+    <string name="popup_edit_note">Edit Note</string>
+    <string name="popup_delete">Delete</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>
