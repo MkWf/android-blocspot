@@ -14,8 +14,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
 
-
 import com.bloc.blocspot.blocspot.R;
+import com.bloc.blocspot.places.Place;
+import com.bloc.blocspot.places.PlacesService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -23,8 +24,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import com.bloc.blocspot.places.*;
 
 import java.util.ArrayList;
 
@@ -36,7 +35,7 @@ import java.util.ArrayList;
  *
  */
 public class BlocSpotActivity extends Activity {
-
+    private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
     private String[] places;
@@ -72,7 +71,6 @@ public class BlocSpotActivity extends Activity {
                     }
 
                 });
-
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
@@ -91,6 +89,10 @@ public class BlocSpotActivity extends Activity {
             super.onPostExecute(result);
             if (dialog.isShowing()) {
                 dialog.dismiss();
+            }
+
+            if(result.size() == 0){
+                return;
             }
             for (int i = 0; i < result.size(); i++) {
                 mMap.addMarker(new MarkerOptions()
@@ -126,7 +128,7 @@ public class BlocSpotActivity extends Activity {
         @Override
         protected ArrayList<Place> doInBackground(Void... arg0) {
             PlacesService service = new PlacesService(
-                    "Put your project browser API key here");
+                    API_KEY);
             ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
                     loc.getLongitude(), places); // 77.218276
 
