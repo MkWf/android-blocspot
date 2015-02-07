@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.bloc.blocspot.blocspot.R;
 
@@ -18,6 +20,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.point_item);
+
+        TextView location = (TextView) findViewById(R.id.point_item_location);
+        TextView note = (TextView) findViewById(R.id.point_item_note);
+        TextView distance = (TextView) findViewById(R.id.point_item_distance);
+        CheckBox checkbox = (CheckBox) findViewById(R.id.point_item_checkbox);
+
+        location.setText("Grill Baby, Grill");
+        note.setText("Looks like fun, Karen said she had a blast at this place");
+        distance.setText("<1 mi");
     }
 
     @Override
