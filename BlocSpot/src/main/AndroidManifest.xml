@@ -19,7 +19,7 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0"/>
 
-        <activity android:name="com.bloc.blocspot.BlocSpotActivity">
+        <activity android:name="com.bloc.blocspot.activities.MapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

@@ -1,4 +1,4 @@
-package com.bloc.blocspot;
+package com.bloc.blocspot.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * @Date   10/3/2013
  *
  */
-public class BlocSpotActivity extends Activity {
+public class MapActivity extends Activity {
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
@@ -45,7 +45,7 @@ public class BlocSpotActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
         initCompo();
         places = getResources().getStringArray(R.array.places);
         currentLocation();
@@ -63,7 +63,7 @@ public class BlocSpotActivity extends Activity {
                                         "_"));
                         if (loc != null) {
                             mMap.clear();
-                            new GetPlaces(BlocSpotActivity.this,
+                            new GetPlaces(MapActivity.this,
                                     places[itemPosition].toLowerCase().replace(
                                             "-", "_").replace(" ", "_")).execute();
                         }
@@ -165,7 +165,7 @@ public class BlocSpotActivity extends Activity {
             locationManager.requestLocationUpdates(provider, 0, 0, listener);
         } else {
             loc = location;
-            new GetPlaces(BlocSpotActivity.this, places[0].toLowerCase().replace(
+            new GetPlaces(MapActivity.this, places[0].toLowerCase().replace(
                     "-", "_")).execute();
             Log.e(TAG, "location : " + location);
         }
