@@ -10,16 +10,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
         android:button="@drawable/cb_checked"/>
 
     <TextView
+        style="@style/Title"
         android:id="@+id/point_item_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/point_item_checkbox"
-        android:layout_alignTop="@id/point_item_checkbox"/>
+        android:layout_alignTop="@id/point_item_checkbox"
+        android:paddingBottom="6dp"/>
 
     <TextView
+        style="@style/Note"
         android:id="@+id/point_item_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,9 +32,17 @@
         android:layout_toRightOf="@id/point_item_checkbox"/>
 
     <TextView
+        style="@style/Distance"
         android:id="@+id/point_item_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/point_item_checkbox"
         android:layout_alignParentLeft="true"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_action_overflow"
+        android:onClick="showPopup" />
 </RelativeLayout>

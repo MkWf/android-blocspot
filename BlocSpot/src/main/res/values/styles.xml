@@ -17,4 +17,18 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+     </style>
+
+    <style name="Note">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Distance">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
