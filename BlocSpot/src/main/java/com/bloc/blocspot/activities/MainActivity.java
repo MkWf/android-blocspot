@@ -8,14 +8,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.bloc.blocspot.adapters.ItemAdapter;
+import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 
 /**
  * Created by Mark on 2/6/2015.
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ItemAdapter.Delegate {
 
     private Menu menu;
     private ItemAdapter itemAdapter;
@@ -27,6 +29,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         itemAdapter = new ItemAdapter();
+        itemAdapter.setDelegate(this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -49,4 +52,11 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onItemClicked(ItemAdapter itemAdapter, PointItem pointItem){
+        Toast.makeText(this, pointItem.getLocation(), Toast.LENGTH_SHORT).show();
+    }
+
+
 }
