@@ -21,7 +21,7 @@ import java.lang.ref.WeakReference;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterViewHolder> {
 
     public static interface Delegate {
-        public void onItemClicked(ItemAdapter itemAdapter, CheckBox box);
+        public void onItemClicked(ItemAdapter itemAdapter, CheckBox box, PointItem item);
         public void onPopupMenuClicked(ItemAdapter itemAdapter, View view);
     }
 
@@ -88,7 +88,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         public void onClick(View view) {
             if (view == itemView) {
                 if (getDelegate() != null) {
-                    getDelegate().onItemClicked(ItemAdapter.this, visitedBox);
+                    getDelegate().onItemClicked(ItemAdapter.this, visitedBox, item);
                 }
             }else{
                 if (getDelegate() != null) {

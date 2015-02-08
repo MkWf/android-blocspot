@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.PopupMenu;
 
 import com.bloc.blocspot.adapters.ItemAdapter;
+import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 
 /**
@@ -54,11 +55,13 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate, Popu
     }
 
     @Override
-    public void onItemClicked(ItemAdapter itemAdapter, CheckBox visitedBox){
+    public void onItemClicked(ItemAdapter itemAdapter, CheckBox visitedBox, PointItem item){
         if(visitedBox.isChecked()){
             visitedBox.setChecked(false);
+            item.setVisited(false);
         }else{
             visitedBox.setChecked(true);
+            item.setVisited(true);
         }
     }
 
