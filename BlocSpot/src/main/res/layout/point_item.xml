@@ -9,17 +9,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:paddingTop="20dp"
-        android:paddingRight="20dp"
-        android:button="@drawable/cb_checked"/>
+        android:button="@drawable/cb_check_checkbox"
+        android:background="@color/red"
+        android:layout_alignParentLeft="true"/>
+
+    <View
+        android:id="@+id/checkbox_padding"
+        android:layout_width="8dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/point_item_checkbox"/>
 
     <TextView
         style="@style/Title"
         android:id="@+id/point_item_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/point_item_checkbox"
+        android:layout_toRightOf="@id/checkbox_padding"
         android:layout_alignTop="@id/point_item_checkbox"
         android:paddingBottom="6dp"/>
 

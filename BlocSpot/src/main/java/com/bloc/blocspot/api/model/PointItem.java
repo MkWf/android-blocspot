@@ -7,11 +7,15 @@ public class PointItem {
     private String location;
     private String note;
     private String distance;
+    private String category;
+    private boolean visited;
 
     public PointItem(String distance, String note, String title) {
         this.distance = distance;
         this.note = note;
         this.location = title;
+        this.category = "";
+        this.visited = false;
     }
 
     public String getDistance() {
@@ -26,6 +30,8 @@ public class PointItem {
         return location;
     }
 
+    public String getCategory() {return category;}
+
     public void setLocation(String distance) {
         this.distance = distance;
     }
@@ -37,4 +43,11 @@ public class PointItem {
     public void setNote(String note) {
         this.note = note;
     }
+
+    public void setCategory(String category) { this.category = category;}
+
+    public boolean isVisited() { return visited; }
+
+    public void setVisited(boolean visited) {this.visited = visited;}
+
 }

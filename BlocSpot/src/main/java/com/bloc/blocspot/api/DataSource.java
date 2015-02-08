@@ -24,6 +24,7 @@ public class DataSource {
     void createFakeData() {
         for (int i = 0; i < 10; i++) {
             items.add(new PointItem("<1 mi", "I heard good reviews about this place", "Grill Baby, Grill"));
+            //items.get(i).setCategory("red");
         }
     }
 }

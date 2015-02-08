@@ -9,11 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.bloc.blocspot.adapters.ItemAdapter;
-import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 
 /**
@@ -55,8 +54,12 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate, Popu
     }
 
     @Override
-    public void onItemClicked(ItemAdapter itemAdapter, PointItem pointItem){
-        Toast.makeText(this, pointItem.getLocation(), Toast.LENGTH_SHORT).show();
+    public void onItemClicked(ItemAdapter itemAdapter, CheckBox visitedBox){
+        if(visitedBox.isChecked()){
+            visitedBox.setChecked(false);
+        }else{
+            visitedBox.setChecked(true);
+        }
     }
 
     @Override

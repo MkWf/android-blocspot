@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -20,7 +21,7 @@ import java.lang.ref.WeakReference;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterViewHolder> {
 
     public static interface Delegate {
-        public void onItemClicked(ItemAdapter itemAdapter, PointItem pointItem);
+        public void onItemClicked(ItemAdapter itemAdapter, CheckBox box);
         public void onPopupMenuClicked(ItemAdapter itemAdapter, View view);
     }
 
@@ -61,6 +62,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         TextView distance;
         ImageButton popupMenu;
         PointItem item;
+        CheckBox visitedBox;
 
         public ItemAdapterViewHolder(View itemView) {
             super(itemView);
@@ -69,6 +71,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             note = (TextView) itemView.findViewById(R.id.point_item_note);
             distance = (TextView) itemView.findViewById(R.id.point_item_distance);
             popupMenu = (ImageButton) itemView.findViewById(R.id.point_item_popup_menu);
+            visitedBox = (CheckBox) itemView.findViewById(R.id.point_item_checkbox);
             itemView.setOnClickListener(this);
             popupMenu.setOnClickListener(this);
 
@@ -85,7 +88,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         public void onClick(View view) {
             if (view == itemView) {
                 if (getDelegate() != null) {
-                    getDelegate().onItemClicked(ItemAdapter.this, item);
+                    getDelegate().onItemClicked(ItemAdapter.this, visitedBox);
                 }
             }else{
                 if (getDelegate() != null) {
