@@ -8,8 +8,6 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.bloc.blocspot.BlocSpotApplication;
-import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 
@@ -25,7 +23,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         public void onPopupMenuClicked(ItemAdapter itemAdapter, View view);
     }
 
+    public static interface DataSource {
+        public PointItem getPointItem(ItemAdapter itemAdapter, int position);
+        public int getItemCount(ItemAdapter itemAdapter);
+    }
+
     private WeakReference<Delegate> delegate;
+    private WeakReference<DataSource> dataSource;
 
     @Override
     public ItemAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int index) {
@@ -35,14 +39,27 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
 
     @Override
     public void onBindViewHolder(ItemAdapterViewHolder itemAdapterViewHolder, int index) {
-        DataSource sharedDataSource = BlocSpotApplication.getSharedDataSource();
-        itemAdapterViewHolder.update(sharedDataSource.getItems().get(index));
+        if (getDataSource() == null) {
+            return;
+        }
+
+        PointItem pointItem = getDataSource().getPointItem(this, index);
+        itemAdapterViewHolder.update(pointItem);
     }
 
     @Override
     public int getItemCount() {
-        return BlocSpotApplication.getSharedDataSource().getItems().size();
+        if (getDataSource() == null) {
+            return 0;
+        }
+        return getDataSource().getItemCount(this);
     }
+
+    /*
+    *
+    * Delegates
+    *
+     */
 
     public Delegate getDelegate() {
         if (delegate == null) {
@@ -55,6 +72,23 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
         this.delegate = new WeakReference<Delegate>(delegate);
     }
 
+    public DataSource getDataSource() {
+        if (dataSource == null) {
+            return null;
+        }
+        return dataSource.get();
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = new WeakReference<DataSource>(dataSource);
+    }
+
+
+    /*
+    *
+    * ItemAdapterViewHolder
+    *
+     */
     class ItemAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView location;

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.PopupMenu;
 
+import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
@@ -19,7 +20,9 @@ import com.bloc.blocspot.blocspot.R;
 /**
  * Created by Mark on 2/6/2015.
  */
-public class MainActivity extends Activity implements ItemAdapter.Delegate, PopupMenu.OnMenuItemClickListener{
+public class MainActivity extends Activity implements ItemAdapter.Delegate,
+        PopupMenu.OnMenuItemClickListener,
+        ItemAdapter.DataSource {
 
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
@@ -31,6 +34,7 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate, Popu
 
         itemAdapter = new ItemAdapter();
         itemAdapter.setDelegate(this);
+        itemAdapter.setDataSource(this);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -89,6 +93,16 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate, Popu
         }
 
         return false;
+    }
+
+    @Override
+    public PointItem getPointItem(ItemAdapter itemAdapter, int position) {
+        return BlocSpotApplication.getSharedDataSource().getItems().get(position);
+    }
+
+    @Override
+    public int getItemCount(ItemAdapter itemAdapter) {
+        return BlocSpotApplication.getSharedDataSource().getItems().size();
     }
 
 
