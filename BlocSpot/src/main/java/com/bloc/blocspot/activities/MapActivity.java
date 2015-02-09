@@ -1,6 +1,5 @@
 package com.bloc.blocspot.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
 
 import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
@@ -38,7 +36,7 @@ public class MapActivity extends Activity {
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
-    private String[] places;
+    //private String[] places;
     private LocationManager locationManager;
     private Location loc;
 
@@ -47,9 +45,9 @@ public class MapActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initCompo();
-        places = getResources().getStringArray(R.array.places);
+        //places = getResources().getStringArray(R.array.places);
         currentLocation();
-        final ActionBar actionBar = getActionBar();
+        /*final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(
                         this, R.array.places, android.R.layout.simple_list_item_1),
@@ -70,18 +68,18 @@ public class MapActivity extends Activity {
                         return true;
                     }
 
-                });
+                });*/
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
 
         private ProgressDialog dialog;
         private Context context;
-        private String places;
+      //  private String places;
 
-        public GetPlaces(Context context, String places) {
+        public GetPlaces(Context context){//{, String places) {
             this.context = context;
-            this.places = places;
+           // this.places = places;
         }
 
         @Override
@@ -94,7 +92,7 @@ public class MapActivity extends Activity {
             if(result.size() == 0){
                 return;
             }
-            for (int i = 0; i < result.size(); i++) {
+            for (int i = 1; i < result.size(); i++) {
                 mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getName())
                         .position(
@@ -105,8 +103,8 @@ public class MapActivity extends Activity {
                         .snippet(result.get(i).getVicinity()));
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(result.get(0).getLatitude(), result
-                            .get(0).getLongitude())) // Sets the center of the map to
+                    .target(new LatLng(result.get(1).getLatitude(), result
+                            .get(1).getLongitude())) // Sets the center of the map to
                             // Mountain View
                     .zoom(14) // Sets the zoom
                     .tilt(30) // Sets the tilt of the camera to 30 degrees
@@ -130,13 +128,7 @@ public class MapActivity extends Activity {
             PlacesService service = new PlacesService(
                     API_KEY);
             ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
-                    loc.getLongitude(), places); // 77.218276
-
-            for (int i = 0; i < findPlaces.size(); i++) {
-
-                Place placeDetail = findPlaces.get(i);
-                Log.e(TAG, "places : " + placeDetail.getName());
-            }
+                    loc.getLongitude()); // 77.218276
             return findPlaces;
         }
 
@@ -165,8 +157,7 @@ public class MapActivity extends Activity {
             locationManager.requestLocationUpdates(provider, 0, 0, listener);
         } else {
             loc = location;
-            new GetPlaces(MapActivity.this, places[0].toLowerCase().replace(
-                    "-", "_")).execute();
+            new GetPlaces(MapActivity.this).execute();
             Log.e(TAG, "location : " + location);
         }
 
