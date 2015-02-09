@@ -1,0 +1,113 @@
+[33mcommit 1243a79231500e824a9565e43446ea5b6bc22101[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Feb 8 23:57:23 2015 -0500
+
+    map displays all items. no filter
+
+[33mcommit cafbe70746f70ae58c31577be3ee3e37b115aa15[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Feb 8 00:34:14 2015 -0500
+
+    Refactored itemadapter to decouple it from datasource
+
+[33mcommit 50fcac00925299dffc9e03baf416b1f2a606dc30[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Feb 8 00:13:57 2015 -0500
+
+    Added setVisited in mainactivity onitemclick to update the item's visited status
+
+[33mcommit d06b1c4af802e0507ad50dcc66c37315d642ea1c[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sun Feb 8 00:02:38 2015 -0500
+
+    Added category/visit get/set for pointitem. Added checkbox/checked drawables. Added statelist drawable for the checkbox. Added itemclick function to check-uncheck checkbox for each item.
+
+[33mcommit 3a0be5ff4fa3db808e85239e327e72abbb88f70a[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 18:35:53 2015 -0500
+
+    Added onMenuItemClick for popup menu in mainactivity
+
+[33mcommit 3462f1cf7ad19dbbf9acbde1bbb86d0cf74f8045[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 18:09:21 2015 -0500
+
+    Added transparency to imagebutton for popupmenu. Added popupmenu delegate method in itemadapter and implemented it in mainactivity. Added popupmenu functionality and populated the menu inside of it.
+
+[33mcommit d9a43454039e321a73768bca1567228708b211ce[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 17:31:45 2015 -0500
+
+    Added delegate interface between itemadapter and MainActivity. Add item click functionality.
+
+[33mcommit 4f3ddfe80d76f7d473c9b017d2894ef93dab3d88[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 13:26:23 2015 -0500
+
+    Added app singleton, datasource, itemadapter/recyclerview, pointitem classes.
+
+[33mcommit 2090f249d1b9da6b075119fcf25227d9611875b4[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 01:46:37 2015 -0500
+
+    Added styles for point_item views. Added placeholder popup menu button.
+
+[33mcommit 9ec73ee3ba8e2d7ceeb43f295e71b81b4a9d677c[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 01:18:55 2015 -0500
+
+    Added layout/point_item.xml. Added checkbox drawable icon images.
+
+[33mcommit 172bfddf5cc8ab99c3cba49c1b380f42d9baaed0[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 00:31:28 2015 -0500
+
+    Added actionbar map functionality
+
+[33mcommit 76c9e5b0fe2cf88aab6e3ba59fdaceeb4b9a8e53[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Sat Feb 7 00:21:33 2015 -0500
+
+    Added actionbar icon images. Added menu/main.xml. Added icons to the bar.
+
+[33mcommit c9b46ebcf88498c57a6b0a92a8aa5af608180ca9[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Feb 6 23:41:37 2015 -0500
+
+    Renamed BlocSpotActivity to MapActivity and moved it to activies package. Renamed activity_main to activity_map.
+
+[33mcommit 10027eaa8cd484048ccc50337ee194a80fcf5521[m
+Author: Mark Wassef <markdevw@gmail.com>
+Date:   Fri Feb 6 23:11:28 2015 -0500
+
+    initial commit
+
+[33mcommit abbfdd4a6037a502e45e847718896b55a4fc2f7d[m
+Author: Stan Idesis <stan.idesis@gmail.com>
+Date:   Mon May 26 13:30:39 2014 -0700
+
+    Typo fix
+
+[33mcommit 4107219ac8e49faf96864482e1482bd183fc723b[m
+Author: Stan Idesis <stan.idesis@gmail.com>
+Date:   Mon May 26 11:51:58 2014 -0700
+
+    Updated the README
+
+[33mcommit 32da6c220e8d7099ad85bd8feb23264604cb7d23[m
+Author: Stan Idesis <stan.idesis@gmail.com>
+Date:   Thu May 22 18:03:47 2014 -0700
+
+    Updated README.md
+
+[33mcommit fcdf82364a878856f53c8dd37ed675bcf49d3f1d[m
+Author: Stan Idesis <stan.idesis@gmail.com>
+Date:   Thu May 22 17:56:01 2014 -0700
+
+    Initial commit for BlocSpot template
+
+[33mcommit c6f81419e44cfaaf90d18f4afd7317752bf8257e[m
+Author: stanidesis <stan.idesis@gmail.com>
+Date:   Thu May 22 17:49:59 2014 -0700
+
+    Initial commit

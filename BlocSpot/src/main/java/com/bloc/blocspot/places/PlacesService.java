@@ -1,7 +1,5 @@
 package com.bloc.blocspot.places;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +46,6 @@ public class PlacesService {
                 try {
                     Place place = Place
                             .jsonToPontoReferencia((JSONObject) array.get(i));
-                    Log.v("Places Services ", "" + place);
                     arrayList.add(place);
                 } catch (Exception e) {
                     e.printStackTrace();

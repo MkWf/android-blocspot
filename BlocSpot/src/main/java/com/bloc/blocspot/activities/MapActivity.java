@@ -92,15 +92,17 @@ public class MapActivity extends Activity {
             if(result.size() == 0){
                 return;
             }
-            for (int i = 1; i < result.size(); i++) {
-                mMap.addMarker(new MarkerOptions()
-                        .title(result.get(i).getName())
-                        .position(
-                                new LatLng(result.get(i).getLatitude(), result
-                                        .get(i).getLongitude()))
-                        .icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.pin))
-                        .snippet(result.get(i).getVicinity()));
+            for (int i = 0; i < result.size(); i++) {
+                if(result.get(i) != null){
+                    mMap.addMarker(new MarkerOptions()
+                            .title(result.get(i).getName())
+                            .position(
+                                    new LatLng(result.get(i).getLatitude(), result
+                                            .get(i).getLongitude()))
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(R.drawable.pin))
+                            .snippet(result.get(i).getVicinity()));
+                }
             }
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(result.get(1).getLatitude(), result
@@ -158,7 +160,7 @@ public class MapActivity extends Activity {
         } else {
             loc = location;
             new GetPlaces(MapActivity.this).execute();
-            Log.e(TAG, "location : " + location);
+            //Log.e(TAG, "location : " + location);
         }
 
     }

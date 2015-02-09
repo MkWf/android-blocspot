@@ -1,10 +1,10 @@
 package com.bloc.blocspot.places;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *  Model class for Places data.
@@ -78,7 +78,9 @@ public class Place {
             result.setLongitude((Double) location.get("lng"));
             result.setIcon(pontoReferencia.getString("icon"));
             result.setName(pontoReferencia.getString("name"));
-            result.setVicinity(pontoReferencia.getString("vicinity"));
+            if(pontoReferencia.getString("vicinity") != null){
+                result.setVicinity(pontoReferencia.getString("vicinity"));
+            }
             result.setId(pontoReferencia.getString("id"));
             return result;
         } catch (JSONException ex) {
