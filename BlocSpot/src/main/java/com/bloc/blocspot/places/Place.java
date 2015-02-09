@@ -69,6 +69,8 @@ public class Place {
         this.vicinity = vicinity;
     }
 
+
+
     static Place jsonToPontoReferencia(JSONObject pontoReferencia) {
         try {
             Place result = new Place();

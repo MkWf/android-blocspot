@@ -18,6 +18,10 @@ public class PointItem {
         this.visited = false;
     }
 
+    public PointItem(){
+
+    }
+
     public String getDistance() {
         return distance;
     }
