@@ -13,19 +13,19 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.PopupMenu;
 
+import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.adapters.ItemAdapter;
+import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
 import com.bloc.blocspot.places.PlacesService;
-import com.google.android.gms.maps.GoogleMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,21 +40,30 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
-    private final String TAG = getClass().getSimpleName();
-    private GoogleMap mMap;
-    //private String[] places;
     private LocationManager locationManager;
     private Location loc;
-    private List<PointItem> items;
+    private List<PointItem> items = new ArrayList<PointItem>();
     private ProgressDialog dialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        currentLocation();
+        BlocSpotApplication.getSharedDataSource().getPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+            @Override
+            public void onSuccess(List<PointItem> pointItems) {
+                if (!pointItems.isEmpty()) {
+                    items.addAll(0, pointItems);
+                    itemAdapter.notifyItemRangeInserted(0, pointItems.size());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+            }
+        });
+
 
         itemAdapter = new ItemAdapter();
         itemAdapter.setDelegate(this);
@@ -136,17 +145,6 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
         }
     }
 
-
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    private double rad2deg(double rad) {
-        return (rad * 180 / Math.PI);
-    }
-
-
-
     private void currentLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -160,7 +158,6 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
         } else {
             loc = location;
             new GetPlaces(MainActivity.this).execute();
-            //Log.e(TAG, "location : " + location);
         }
 
     }
@@ -184,7 +181,6 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "location update : " + location);
             loc = location;
             locationManager.removeUpdates(listener);
         }
