@@ -89,14 +89,31 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
             }
 
             items = new ArrayList<PointItem>(result.size());
-            items.add(new PointItem("1", "1", "1"));
             for (int i = 0; i < result.size(); i++) {
                 if(result.get(i) != null){
-                    items.add(new PointItem("1", "1", "1"));
-                    items.get(i).setTitle(result.get(i).getName());
+                    items.add(new PointItem());
+                    items.get(i).setLocation(result.get(i).getName());
+
+                    double pointDistance = haversine(loc.getLatitude(), loc.getLongitude(), result.get(i).getLatitude(), result.get(i).getLongitude());
+                    int dist = (int) pointDistance + 1;
+
+                    items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
                 }
             }
             itemAdapter.notifyDataSetChanged();
+        }
+
+        public double haversine(
+                double lat1, double lng1, double lat2, double lng2) {
+            int r = 3963;
+            double dLat = Math.toRadians(lat2 - lat1);
+            double dLon = Math.toRadians(lng2 - lng1);
+            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                            * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            double d = r * c;
+            return d;
         }
 
         @Override
@@ -104,7 +121,7 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
             super.onPreExecute();
             dialog = new ProgressDialog(context);
             dialog.setCancelable(false);
-            dialog.setMessage("Loading..");
+            dialog.setMessage(getString(R.string.place_search));
             dialog.isIndeterminate();
             dialog.show();
         }
@@ -117,8 +134,17 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
                     loc.getLongitude()); // 77.218276
             return findPlaces;
         }
-
     }
+
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180 / Math.PI);
+    }
+
 
 
     private void currentLocation() {

@@ -83,6 +83,9 @@ public class Place {
             if(pontoReferencia.getString("vicinity") != null){
                 result.setVicinity(pontoReferencia.getString("vicinity"));
             }
+            else{
+                result.setVicinity("");
+            }
             result.setId(pontoReferencia.getString("id"));
             return result;
         } catch (JSONException ex) {

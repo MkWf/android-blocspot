@@ -11,6 +11,7 @@
     <string name="popup_choose_category">Choose Category</string>
     <string name="popup_edit_note">Edit Note</string>
     <string name="popup_delete">Delete</string>
+    <string name="place_search">Searching for places..</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>
