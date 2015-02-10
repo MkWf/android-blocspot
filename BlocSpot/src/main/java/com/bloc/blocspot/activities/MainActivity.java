@@ -2,13 +2,9 @@ package com.bloc.blocspot.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,8 +20,6 @@ import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
-import com.bloc.blocspot.places.Place;
-import com.bloc.blocspot.places.PlacesService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,121 +68,6 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemAdapter);
     }
-
-    private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
-
-        private ProgressDialog dialog;
-        private Context context;
-        //  private String places;
-
-        public GetPlaces(Context context){//{, String places) {
-            this.context = context;
-            // this.places = places;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Place> result) {
-            super.onPostExecute(result);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
-            }
-
-            if(result.size() == 0){
-                return;
-            }
-
-            items = new ArrayList<PointItem>(result.size());
-            for (int i = 0; i < result.size(); i++) {
-                if(result.get(i) != null){
-                    items.add(new PointItem());
-                    items.get(i).setLocation(result.get(i).getName());
-
-                    double pointDistance = haversine(loc.getLatitude(), loc.getLongitude(), result.get(i).getLatitude(), result.get(i).getLongitude());
-                    int dist = (int) pointDistance + 1;
-
-                    items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
-                }
-            }
-            itemAdapter.notifyDataSetChanged();
-        }
-
-        public double haversine(
-                double lat1, double lng1, double lat2, double lng2) {
-            int r = 3963;
-            double dLat = Math.toRadians(lat2 - lat1);
-            double dLon = Math.toRadians(lng2 - lng1);
-            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                            * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            double d = r * c;
-            return d;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(context);
-            dialog.setCancelable(false);
-            dialog.setMessage(getString(R.string.place_search));
-            dialog.isIndeterminate();
-            dialog.show();
-        }
-
-        @Override
-        protected ArrayList<Place> doInBackground(Void... arg0) {
-            PlacesService service = new PlacesService(
-                    API_KEY);
-            ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
-                    loc.getLongitude()); // 77.218276
-            return findPlaces;
-        }
-    }
-
-    private void currentLocation() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        String provider = locationManager
-                .getBestProvider(new Criteria(), false);
-
-        Location location = locationManager.getLastKnownLocation(provider);
-
-        if (location == null) {
-            locationManager.requestLocationUpdates(provider, 0, 0, listener);
-        } else {
-            loc = location;
-            new GetPlaces(MainActivity.this).execute();
-        }
-
-    }
-
-    private LocationListener listener = new LocationListener() {
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            loc = location;
-            locationManager.removeUpdates(listener);
-        }
-    };
-
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -270,7 +149,4 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
         }
         return 0;
     }
-
-
-
 }
