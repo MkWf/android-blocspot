@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -5,18 +6,18 @@
         android:icon="@drawable/ic_action_map"
         android:title="@string/menu_map"
         android:orderInCategory="0"
-        android:showAsAction="always"/>
+        app:showAsAction="always"/>
 
     <item android:id="@+id/action_search"
         android:icon="@drawable/ic_action_search"
         android:title="@string/menu_search"
         android:orderInCategory="1"
-        android:showAsAction="always"/>
+        app:showAsAction="always"/>
 
     <item android:id="@+id/action_filter"
         android:icon="@drawable/ic_action_filter"
         android:title="@string/menu_filter"
         android:orderInCategory="2"
-        android:showAsAction="always"/>
+        app:showAsAction="always"/>
 
 </menu>

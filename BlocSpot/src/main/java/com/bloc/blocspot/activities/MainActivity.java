@@ -1,6 +1,5 @@
 package com.bloc.blocspot.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -8,9 +7,11 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Created by Mark on 2/6/2015.
  */
-public class MainActivity extends Activity implements ItemAdapter.Delegate,
+public class MainActivity extends ActionBarActivity implements ItemAdapter.Delegate,
         PopupMenu.OnMenuItemClickListener,
         ItemAdapter.DataSource {
 
@@ -45,6 +46,7 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
     private PointItem editNote;
     private View noteView;
     private RecyclerView recyclerView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
             }
         });
 
+        toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
+        setSupportActionBar(toolbar);
 
         itemAdapter = new ItemAdapter();
         itemAdapter.setDelegate(this);
