@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/list_selector">>
+
+    <View
+        android:id="@+id/point_item_leftpadding"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_alignParentLeft="true"/>
+
+    <View
+        android:id="@+id/point_item_toppadding"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_toRightOf="@id/point_item_leftpadding"
+        android:layout_alignParentTop="true"/>
+
+
+    <CheckBox
+        android:id="@+id/point_item_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/point_item_leftpadding"
+        android:layout_below="@id/point_item_toppadding"
+        android:layout_marginBottom="4dp"
+        android:button="@drawable/cb_check_checkbox"
+        android:background="@color/red"/>
+
+    <TextView
+        style="@style/Title"
+        android:id="@+id/point_item_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/point_item_checkbox"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        style="@style/Distance"
+        android:id="@+id/point_item_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/point_item_checkbox"
+        android:layout_below="@id/point_item_checkbox"/>
+
+    <TextView
+        style="@style/Note"
+        android:id="@+id/point_item_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/point_item_location"
+        android:layout_alignLeft="@id/point_item_location"
+        android:layout_alignBottom="@id/point_item_distance"/>
+
+    <ImageButton
+        android:id="@+id/point_item_popup_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_action_overflow"
+        />
+
+    <View
+        android:id="@+id/point_item_horizontal_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/point_item_distance"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/darker_gray"/>
+</RelativeLayout>

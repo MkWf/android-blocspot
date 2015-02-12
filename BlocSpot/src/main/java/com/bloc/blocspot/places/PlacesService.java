@@ -1,7 +1,5 @@
 package com.bloc.blocspot.places;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,10 +31,10 @@ public class PlacesService {
         this.API_KEY = apikey;
     }
 
-    public ArrayList<Place> findPlaces(double latitude, double longitude,
-                                       String placeSpecification) {
+    public ArrayList<Place> findPlaces(double latitude, double longitude){
+                                      // String placeSpecification) {
 
-        String urlString = makeUrl(latitude, longitude, placeSpecification);
+        String urlString = makeUrl(latitude, longitude);
         try {
             String json = getJSON(urlString);
             System.out.println(json);
@@ -46,9 +44,10 @@ public class PlacesService {
             ArrayList<Place> arrayList = new ArrayList<Place>();
             for (int i = 0; i < array.length(); i++) {
                 try {
-                    Place place = Place
-                            .jsonToPontoReferencia((JSONObject) array.get(i));
-                    Log.v("Places Services ", "" + place);
+                    Place place = Place.jsonToPontoReferencia((JSONObject) array.get(i));
+                    if(place.getVicinity() == ""){
+                        continue;
+                    }
                     arrayList.add(place);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,10 +62,9 @@ public class PlacesService {
     }
 
     // https://maps.googleapis.com/maps/api/place/search/json?location=28.632808,77.218276&radius=500&types=atm&sensor=false&key=apikey
-    private String makeUrl(double latitude, double longitude, String place) {
+    private String makeUrl(double latitude, double longitude) {
         StringBuilder urlString = new StringBuilder(
                 "https://maps.googleapis.com/maps/api/place/search/json?");
-        if (place.equals("")) {
             urlString.append("&location=");
             urlString.append(Double.toString(latitude));
             urlString.append(",");
@@ -74,15 +72,7 @@ public class PlacesService {
             urlString.append("&radius=10000");
             // urlString.append("&types="+place);
             urlString.append("&sensor=false&key=" + API_KEY);
-        } else {
-            urlString.append("&location=");
-            urlString.append(Double.toString(latitude));
-            urlString.append(",");
-            urlString.append(Double.toString(longitude));
-            urlString.append("&radius=10000");
-            urlString.append("&types=" + place);
-            urlString.append("&sensor=false&key=" + API_KEY);
-        }
+
         return urlString.toString();
     }
 

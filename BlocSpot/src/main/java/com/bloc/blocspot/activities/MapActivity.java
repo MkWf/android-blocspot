@@ -1,6 +1,5 @@
 package com.bloc.blocspot.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,20 +11,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
 
 import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
 import com.bloc.blocspot.places.PlacesService;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  This class is used to search places using Places API using keywords like police,hospital etc.
@@ -38,7 +39,7 @@ public class MapActivity extends Activity {
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
-    private String[] places;
+    //private String[] places;
     private LocationManager locationManager;
     private Location loc;
 
@@ -47,9 +48,11 @@ public class MapActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         initCompo();
-        places = getResources().getStringArray(R.array.places);
         currentLocation();
-        final ActionBar actionBar = getActionBar();
+
+        //places = getResources().getStringArray(R.array.places);
+        //currentLocation();
+        /*final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setListNavigationCallbacks(ArrayAdapter.createFromResource(
                         this, R.array.places, android.R.layout.simple_list_item_1),
@@ -70,18 +73,18 @@ public class MapActivity extends Activity {
                         return true;
                     }
 
-                });
+                });*/
     }
 
     private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
 
         private ProgressDialog dialog;
         private Context context;
-        private String places;
+      //  private String places;
 
-        public GetPlaces(Context context, String places) {
+        public GetPlaces(Context context){//{, String places) {
             this.context = context;
-            this.places = places;
+           // this.places = places;
         }
 
         @Override
@@ -94,25 +97,31 @@ public class MapActivity extends Activity {
             if(result.size() == 0){
                 return;
             }
+
+            List<Marker> markers = new ArrayList<Marker>();
             for (int i = 0; i < result.size(); i++) {
-                mMap.addMarker(new MarkerOptions()
-                        .title(result.get(i).getName())
-                        .position(
-                                new LatLng(result.get(i).getLatitude(), result
-                                        .get(i).getLongitude()))
-                        .icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.pin))
-                        .snippet(result.get(i).getVicinity()));
+                if(result.get(i) != null){
+                    markers.add(mMap.addMarker(new MarkerOptions()
+                            .title(result.get(i).getName())
+                            .position(
+                                    new LatLng(result.get(i).getLatitude(), result
+                                            .get(i).getLongitude()))
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(R.drawable.pin))
+                            .snippet(result.get(i).getVicinity())));
+                }
             }
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(result.get(0).getLatitude(), result
-                            .get(0).getLongitude())) // Sets the center of the map to
+            displayAllPointsInView(markers);
+
+           /* CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(result.get(1).getLatitude(), result
+                            .get(1).getLongitude())) // Sets the center of the map to
                             // Mountain View
                     .zoom(14) // Sets the zoom
                     .tilt(30) // Sets the tilt of the camera to 30 degrees
                     .build(); // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory
-                    .newCameraPosition(cameraPosition));
+                    .newCameraPosition(cameraPosition));*/
         }
 
         @Override
@@ -120,7 +129,7 @@ public class MapActivity extends Activity {
             super.onPreExecute();
             dialog = new ProgressDialog(context);
             dialog.setCancelable(false);
-            dialog.setMessage("Loading..");
+            dialog.setMessage("Loading Map..");
             dialog.isIndeterminate();
             dialog.show();
         }
@@ -130,13 +139,7 @@ public class MapActivity extends Activity {
             PlacesService service = new PlacesService(
                     API_KEY);
             ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
-                    loc.getLongitude(), places); // 77.218276
-
-            for (int i = 0; i < findPlaces.size(); i++) {
-
-                Place placeDetail = findPlaces.get(i);
-                Log.e(TAG, "places : " + placeDetail.getName());
-            }
+                    loc.getLongitude()); // 77.218276
             return findPlaces;
         }
 
@@ -145,12 +148,6 @@ public class MapActivity extends Activity {
     private void initCompo() {
         mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                 .getMap();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
     }
 
     private void currentLocation() {
@@ -165,11 +162,24 @@ public class MapActivity extends Activity {
             locationManager.requestLocationUpdates(provider, 0, 0, listener);
         } else {
             loc = location;
-            new GetPlaces(MapActivity.this, places[0].toLowerCase().replace(
-                    "-", "_")).execute();
-            Log.e(TAG, "location : " + location);
+            new GetPlaces(MapActivity.this).execute();
+            //Log.e(TAG, "location : " + location);
         }
 
+    }
+
+    public void displayAllPointsInView(List<Marker> items){
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for (Marker marker : items) {
+            builder.include(marker.getPosition());
+        }
+        LatLngBounds bounds = builder.build();
+
+        int padding = 100; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+        mMap.animateCamera(cu);
     }
 
     private LocationListener listener = new LocationListener() {
@@ -197,4 +207,9 @@ public class MapActivity extends Activity {
         }
     };
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        return true;
+    }
 }
