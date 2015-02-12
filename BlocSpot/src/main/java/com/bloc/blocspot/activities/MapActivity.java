@@ -1,20 +1,16 @@
 package com.bloc.blocspot.activities;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
+import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
-import com.bloc.blocspot.places.PlacesService;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,20 +31,27 @@ import java.util.List;
  * @Date   10/3/2013
  *
  */
-public class MapActivity extends Activity {
+public class MapActivity extends ActionBarActivity {
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
     //private String[] places;
     private LocationManager locationManager;
     private Location loc;
+    private Toolbar toolbar;
+    List<Marker> markers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        initCompo();
-        currentLocation();
+
+        initMap();
+        loadMap(BlocSpotApplication.getSharedDataSource().getPointItemPlaces());
+
+        toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
+        setSupportActionBar(toolbar);
+
 
         //places = getResources().getStringArray(R.array.places);
         //currentLocation();
@@ -76,42 +79,44 @@ public class MapActivity extends Activity {
                 });*/
     }
 
-    private class GetPlaces extends AsyncTask<Void, Void, ArrayList<Place>> {
+    public void loadMap(List<Place> place){
+        setMapPoints(place);
 
-        private ProgressDialog dialog;
-        private Context context;
-      //  private String places;
+        mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                displayAllPointsInView(markers);
+            }
+        });
+    }
 
-        public GetPlaces(Context context){//{, String places) {
-            this.context = context;
-           // this.places = places;
+    public void setMapPoints(List<Place> places) {
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setMessage("Loading Map..");
+        dialog.isIndeterminate();
+        dialog.show();
+
+        List<Place> result = BlocSpotApplication.getSharedDataSource().getPointItemPlaces();
+        if (result == null || result.size() == 0) {
         }
 
-        @Override
-        protected void onPostExecute(ArrayList<Place> result) {
-            super.onPostExecute(result);
-            if (dialog.isShowing()) {
-                dialog.dismiss();
+        markers = new ArrayList<Marker>();
+        for (int i = 0; i < result.size(); i++) {
+            if (result.get(i) != null) {
+                markers.add(mMap.addMarker(new MarkerOptions()
+                        .title(result.get(i).getName())
+                        .position(
+                                new LatLng(result.get(i).getLatitude(), result
+                                        .get(i).getLongitude()))
+                        .icon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.pin))
+                        .snippet(result.get(i).getVicinity())));
             }
+        }
+        dialog.dismiss();
+    }
 
-            if(result.size() == 0){
-                return;
-            }
-
-            List<Marker> markers = new ArrayList<Marker>();
-            for (int i = 0; i < result.size(); i++) {
-                if(result.get(i) != null){
-                    markers.add(mMap.addMarker(new MarkerOptions()
-                            .title(result.get(i).getName())
-                            .position(
-                                    new LatLng(result.get(i).getLatitude(), result
-                                            .get(i).getLongitude()))
-                            .icon(BitmapDescriptorFactory
-                                    .fromResource(R.drawable.pin))
-                            .snippet(result.get(i).getVicinity())));
-                }
-            }
-            displayAllPointsInView(markers);
 
            /* CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(result.get(1).getLatitude(), result
@@ -122,53 +127,15 @@ public class MapActivity extends Activity {
                     .build(); // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));*/
-        }
+    //}
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(context);
-            dialog.setCancelable(false);
-            dialog.setMessage("Loading Map..");
-            dialog.isIndeterminate();
-            dialog.show();
-        }
 
-        @Override
-        protected ArrayList<Place> doInBackground(Void... arg0) {
-            PlacesService service = new PlacesService(
-                    API_KEY);
-            ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
-                    loc.getLongitude()); // 77.218276
-            return findPlaces;
-        }
-
-    }
-
-    private void initCompo() {
+    private void initMap() {
         mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                 .getMap();
     }
 
-    private void currentLocation() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        String provider = locationManager
-                .getBestProvider(new Criteria(), false);
-
-        Location location = locationManager.getLastKnownLocation(provider);
-
-        if (location == null) {
-            locationManager.requestLocationUpdates(provider, 0, 0, listener);
-        } else {
-            loc = location;
-            new GetPlaces(MapActivity.this).execute();
-            //Log.e(TAG, "location : " + location);
-        }
-
-    }
-
-    public void displayAllPointsInView(List<Marker> items){
+    public void displayAllPointsInView(List<Marker> items) {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         for (Marker marker : items) {
@@ -182,34 +149,9 @@ public class MapActivity extends Activity {
         mMap.animateCamera(cu);
     }
 
-    private LocationListener listener = new LocationListener() {
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.e(TAG, "location update : " + location);
-            loc = location;
-            locationManager.removeUpdates(listener);
-        }
-    };
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        getMenuInflater().inflate(R.menu.map_actionbar_menu, menu);
         return true;
     }
 }

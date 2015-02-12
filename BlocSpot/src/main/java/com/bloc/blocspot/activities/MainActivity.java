@@ -49,7 +49,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BlocSpotApplication.getSharedDataSource().getPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+        BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
             @Override
             public void onSuccess(List<PointItem> pointItems) {
                 if (!pointItems.isEmpty()) {
@@ -78,14 +78,14 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
         this.actionbarMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_map) {
+        if (item.getItemId() == R.id.main_action_map) {
             Intent intent = new Intent(MainActivity.this, MapActivity.class);
             startActivity(intent);
         }

@@ -30,6 +30,7 @@ public class DataSource {
     private Context context;
     private ExecutorService executorService;
     private Location loc;
+    private List<Place> places;
 
     public static interface Callback<Result> {
         public void onSuccess(Result result);
@@ -52,8 +53,6 @@ public class DataSource {
         return context;
     }
 
-
-
     private void currentLocation() {
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
@@ -69,7 +68,7 @@ public class DataSource {
 
     }
 
-    public void getPointItemPlaces(final Callback<List<PointItem>> callback) {
+    public void fetchPointItemPlaces(final Callback<List<PointItem>> callback) {
         final Handler callbackThreadHandler = new Handler();
         submitTask(new Runnable() {
             @Override
@@ -77,18 +76,18 @@ public class DataSource {
                 currentLocation();
                 PlacesService service = new PlacesService(
                         "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
-                ArrayList<Place> findPlaces = service.findPlaces(loc.getLatitude(), // 28.632808
+                places = service.findPlaces(loc.getLatitude(), // 28.632808
                         loc.getLongitude());
-                if (findPlaces.size() == 0) {
+                if (places.size() == 0) {
                     return;
                 }
-                List<PointItem> items = new ArrayList<PointItem>(findPlaces.size());
-                for (int i = 0; i < findPlaces.size(); i++) {
-                    if (findPlaces.get(i) != null) {
+                List<PointItem> items = new ArrayList<PointItem>(places.size());
+                for (int i = 0; i < places.size(); i++) {
+                    if (places.get(i) != null) {
                         items.add(new PointItem());
-                        items.get(i).setLocation(findPlaces.get(i).getName());
+                        items.get(i).setLocation(places.get(i).getName());
 
-                        double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), findPlaces.get(i).getLatitude(), findPlaces.get(i).getLongitude());
+                        double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
                         items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
@@ -106,6 +105,10 @@ public class DataSource {
                 });
             }
         });
+    }
+
+    public List<Place> getPointItemPlaces(){
+        return places;
     }
 
     public double distBetweenGPSPointsInMiles(
