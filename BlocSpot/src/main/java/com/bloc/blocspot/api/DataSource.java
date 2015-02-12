@@ -147,5 +147,9 @@ public class DataSource {
             locationManager.removeUpdates(listener);
         }
     };
+
+    public Location getUserPosition(){
+        return loc;
+    }
 }
 

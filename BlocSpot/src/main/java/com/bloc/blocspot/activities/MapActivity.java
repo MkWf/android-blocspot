@@ -39,7 +39,8 @@ public class MapActivity extends ActionBarActivity {
     private LocationManager locationManager;
     private Location loc;
     private Toolbar toolbar;
-    List<Marker> markers;
+    List<Marker> placeMarkers;
+    Marker userPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +86,7 @@ public class MapActivity extends ActionBarActivity {
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                displayAllPointsInView(markers);
+                displayAllPointsInView(placeMarkers);
             }
         });
     }
@@ -101,10 +102,10 @@ public class MapActivity extends ActionBarActivity {
         if (result == null || result.size() == 0) {
         }
 
-        markers = new ArrayList<Marker>();
+        placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
             if (result.get(i) != null) {
-                markers.add(mMap.addMarker(new MarkerOptions()
+                placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getName())
                         .position(
                                 new LatLng(result.get(i).getLatitude(), result
@@ -114,6 +115,12 @@ public class MapActivity extends ActionBarActivity {
                         .snippet(result.get(i).getVicinity())));
             }
         }
+        mMap.addMarker(new MarkerOptions()
+                .title("Your position")
+                .position(
+                        new LatLng(BlocSpotApplication.getSharedDataSource().getUserPosition().getLatitude(),
+                                BlocSpotApplication.getSharedDataSource().getUserPosition().getLongitude()))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
         dialog.dismiss();
     }
 
