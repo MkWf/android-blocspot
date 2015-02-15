@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 
 import com.bloc.blocspot.BlocSpotApplication;
+import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
 import com.google.android.gms.maps.CameraUpdate;
@@ -52,7 +53,7 @@ public class MapActivity extends ActionBarActivity {
         deletions = intent.getIntegerArrayListExtra("data");
 
         initMap();
-        loadMap(BlocSpotApplication.getSharedDataSource().getPointItemPlaces());
+        loadMap(BlocSpotApplication.getSharedDataSource().getPlaces());
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         setSupportActionBar(toolbar);
@@ -102,7 +103,7 @@ public class MapActivity extends ActionBarActivity {
         dialog.isIndeterminate();
         dialog.show();
 
-        List<Place> result = BlocSpotApplication.getSharedDataSource().getPointItemPlaces();
+        List<PointItem> result = BlocSpotApplication.getSharedDataSource().getPoints();
         if (result == null || result.size() == 0) {
         }
 
@@ -110,10 +111,10 @@ public class MapActivity extends ActionBarActivity {
         for (int i = 0; i < result.size(); i++) {
             if (result.get(i) != null) {
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(result.get(i).getName())
+                        .title(result.get(i).getLocation())
                         .position(
-                                new LatLng(result.get(i).getLatitude(), result
-                                        .get(i).getLongitude()))
+                                new LatLng(result.get(i).getLat(), result
+                                        .get(i).getLon()))
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
                         .snippet(result.get(i).getVicinity())));

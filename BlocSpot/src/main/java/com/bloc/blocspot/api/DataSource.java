@@ -31,6 +31,7 @@ public class DataSource {
     private ExecutorService executorService;
     private Location loc;
     private List<Place> places;
+    private List<PointItem> items;
 
     public static interface Callback<Result> {
         public void onSuccess(Result result);
@@ -81,7 +82,7 @@ public class DataSource {
                 if (places.size() == 0) {
                     return;
                 }
-                List<PointItem> items = new ArrayList<PointItem>(places.size());
+                items = new ArrayList<PointItem>(places.size());
                 for (int i = 0; i < places.size(); i++) {
                     if (places.get(i) != null) {
                         items.add(new PointItem());
@@ -92,6 +93,8 @@ public class DataSource {
 
                         items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
                         items.get(i).setDistanceValue(dist);
+                        items.get(i).setLat(places.get(i).getLatitude());
+                        items.get(i).setLon(places.get(i).getLongitude());
                     }
                 }
                 Collections.sort(items, new PointItem());
@@ -107,9 +110,10 @@ public class DataSource {
         });
     }
 
-    public List<Place> getPointItemPlaces(){
+    public List<Place> getPlaces(){
         return places;
     }
+    public List<PointItem> getPoints(){ return items; }
 
     public double distBetweenGPSPointsInMiles(
             double lat1, double lng1, double lat2, double lng2) {

@@ -11,7 +11,10 @@ public class PointItem implements Comparator<PointItem> {
     private String distance;
     private String category;
     private boolean visited;
+    private String vicinity;
     private int distanceValue;
+    private double lat;
+    private double lon;
 
     public PointItem(){
         this.distance = "";
@@ -20,6 +23,8 @@ public class PointItem implements Comparator<PointItem> {
         this.category = "";
         this.visited = false;
         this.distanceValue = 0;
+        this.lat = 0;
+        this.lon = 0;
     }
 
     public String getDistance() {
@@ -34,7 +39,15 @@ public class PointItem implements Comparator<PointItem> {
         return location;
     }
 
+    public double getLon() { return lon; }
+
+    public double getLat() { return lat; }
+
     public String getCategory() {return category;}
+
+    public int getDistanceValue() { return distanceValue; }
+
+    public String getVicinity() { return vicinity; }
 
     public void setLocation(String location) {
         this.location = location;
@@ -50,11 +63,17 @@ public class PointItem implements Comparator<PointItem> {
 
     public void setDistanceValue(int distanceValue) { this.distanceValue = distanceValue;}
 
-    public int getDistanceValue() { return distanceValue; }
+    public void setVisited(boolean visited) {this.visited = visited;}
+
+    public void setLon(double lon) { this.lon = lon; }
+
+    public void setLat(double lat) { this.lat = lat; }
+
+    public void setVicinity(String vicinity) {
+        this.note = vicinity;
+    }
 
     public boolean isVisited() { return visited; }
-
-    public void setVisited(boolean visited) {this.visited = visited;}
 
     @Override
     public int compare(PointItem lhs, PointItem rhs) {
