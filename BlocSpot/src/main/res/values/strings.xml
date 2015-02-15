@@ -3,7 +3,6 @@
 
     <string name="app_name">BlocSpot</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_search">Search</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_map">Map</string>
@@ -12,6 +11,8 @@
     <string name="popup_edit_note">Edit Note</string>
     <string name="popup_delete">Delete</string>
     <string name="place_search">Searching for places..</string>
+    <string name="menu_switch_to_list">Switch To List</string>
+    <string name="menu_filter_by_category">Filter By Category</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>

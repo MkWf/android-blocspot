@@ -1,16 +1,15 @@
 package com.bloc.blocspot.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,27 +30,26 @@ import java.util.List;
 /**
  * Created by Mark on 2/6/2015.
  */
-public class MainActivity extends Activity implements ItemAdapter.Delegate,
+public class MainActivity extends ActionBarActivity implements ItemAdapter.Delegate,
         PopupMenu.OnMenuItemClickListener,
         ItemAdapter.DataSource {
 
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
-    private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
-    private LocationManager locationManager;
-    private Location loc;
     private List<PointItem> items = new ArrayList<PointItem>();
     private ProgressDialog dialog;
-    private PointItem editNote;
+    private PointItem clickedItem;
+    int clickedItemPosition;
     private View noteView;
     private RecyclerView recyclerView;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        BlocSpotApplication.getSharedDataSource().getPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+        BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
             @Override
             public void onSuccess(List<PointItem> pointItems) {
                 if (!pointItems.isEmpty()) {
@@ -65,6 +63,8 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
             }
         });
 
+        toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
+        setSupportActionBar(toolbar);
 
         itemAdapter = new ItemAdapter();
         itemAdapter.setDelegate(this);
@@ -78,14 +78,14 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
         this.actionbarMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_map) {
+        if (item.getItemId() == R.id.main_action_map) {
             Intent intent = new Intent(MainActivity.this, MapActivity.class);
             startActivity(intent);
         }
@@ -105,11 +105,10 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
 
     @Override
     public void onPopupMenuClicked(ItemAdapter itemAdapter, View view, PointItem item){
-        int pos = items.indexOf(item);
-        View point = recyclerView.getLayoutManager().findViewByPosition(pos);
-
-        editNote = item;
-        noteView = point;
+        clickedItemPosition = items.indexOf(item);
+        clickedItem = item;
+        //View point = recyclerView.getLayoutManager().findViewByPosition(clickedItemPosition);
+        //noteView = point;
 
         PopupMenu popMenu = new PopupMenu(this, view);
         getMenuInflater().inflate(R.menu.popup_menu, popMenu.getMenu());
@@ -127,7 +126,7 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
 
             case R.id.popup_edit_note :
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Note for " + editNote.getLocation());
+                builder.setTitle("Note for " + clickedItem.getLocation());
 
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -136,7 +135,7 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        editNote.setNote(input.getText().toString());
+                        clickedItem.setNote(input.getText().toString());
                         itemAdapter.notifyDataSetChanged();
                         //noteView.
                     }
@@ -151,6 +150,8 @@ public class MainActivity extends Activity implements ItemAdapter.Delegate,
                 break;
 
             case R.id.popup_delete :
+                items.remove(clickedItem);
+                itemAdapter.notifyItemRemoved(clickedItemPosition);
                 break;
         }
         return false;
