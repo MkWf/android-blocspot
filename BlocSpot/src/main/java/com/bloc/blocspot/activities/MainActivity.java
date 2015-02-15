@@ -43,6 +43,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private View noteView;
     private RecyclerView recyclerView;
     private Toolbar toolbar;
+    private ArrayList<Integer> deletions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.main_action_map) {
             Intent intent = new Intent(MainActivity.this, MapActivity.class);
+            intent.putIntegerArrayListExtra("data", deletions);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -151,6 +153,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
             case R.id.popup_delete :
                 items.remove(clickedItem);
+                deletions.add(clickedItemPosition);
                 itemAdapter.notifyItemRemoved(clickedItemPosition);
                 break;
         }

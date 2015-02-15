@@ -1,6 +1,7 @@
 package com.bloc.blocspot.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -40,11 +41,15 @@ public class MapActivity extends ActionBarActivity {
     private Location loc;
     private Toolbar toolbar;
     List<Marker> placeMarkers;
+    ArrayList<Integer> deletions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        Intent intent = getIntent();
+        deletions = intent.getIntegerArrayListExtra("data");
 
         initMap();
         loadMap(BlocSpotApplication.getSharedDataSource().getPointItemPlaces());
@@ -112,6 +117,14 @@ public class MapActivity extends ActionBarActivity {
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
                         .snippet(result.get(i).getVicinity())));
+            }
+        }
+
+        if(deletions != null || deletions.size() != 0){
+            for(int i = 0; i < deletions.size(); i++){
+                int k = deletions.get(i);
+                placeMarkers.get(k).remove();
+                placeMarkers.remove(k);
             }
         }
         dialog.dismiss();
