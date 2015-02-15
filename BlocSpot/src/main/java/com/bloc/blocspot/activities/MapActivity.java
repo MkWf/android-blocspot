@@ -40,7 +40,6 @@ public class MapActivity extends ActionBarActivity {
     private Location loc;
     private Toolbar toolbar;
     List<Marker> placeMarkers;
-    Marker userPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,6 @@ public class MapActivity extends ActionBarActivity {
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         setSupportActionBar(toolbar);
-
 
         //places = getResources().getStringArray(R.array.places);
         //currentLocation();
@@ -81,7 +79,8 @@ public class MapActivity extends ActionBarActivity {
     }
 
     public void loadMap(List<Place> place){
-        setMapPoints(place);
+        setMapPoints();
+        setUserPoint();
 
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
@@ -91,7 +90,7 @@ public class MapActivity extends ActionBarActivity {
         });
     }
 
-    public void setMapPoints(List<Place> places) {
+    public void setMapPoints() {
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
         dialog.setMessage("Loading Map..");
@@ -115,13 +114,16 @@ public class MapActivity extends ActionBarActivity {
                         .snippet(result.get(i).getVicinity())));
             }
         }
+        dialog.dismiss();
+    }
+
+    public void setUserPoint(){
         mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
                         new LatLng(BlocSpotApplication.getSharedDataSource().getUserPosition().getLatitude(),
                                 BlocSpotApplication.getSharedDataSource().getUserPosition().getLongitude()))
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
-        dialog.dismiss();
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
     }
 
 
