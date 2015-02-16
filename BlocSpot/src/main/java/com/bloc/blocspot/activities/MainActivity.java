@@ -156,7 +156,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
             case R.id.popup_delete :
                 BlocSpotApplication.getSharedDataSource().getPoints().remove(clickedItemPosition);
-                deletions.add(clickedItemPosition);
+               // deletions.add(clickedItemPosition);
                 itemAdapter.notifyItemRemoved(clickedItemPosition);
                 break;
         }

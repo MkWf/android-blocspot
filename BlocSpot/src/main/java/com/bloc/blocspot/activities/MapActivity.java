@@ -43,7 +43,7 @@ public class MapActivity extends ActionBarActivity {
     private Location loc;
     private Toolbar toolbar;
     List<Marker> placeMarkers;
-    ArrayList<Integer> deletions;
+    //ArrayList<Integer> deletions;
     private int nav = 0;
 
     @Override
@@ -52,7 +52,7 @@ public class MapActivity extends ActionBarActivity {
         setContentView(R.layout.activity_map);
 
         Intent intent = getIntent();
-        deletions = intent.getIntegerArrayListExtra("data");
+       // deletions = intent.getIntegerArrayListExtra("data");
 
         nav = intent.getIntExtra("navigate", -1);
 
@@ -128,7 +128,7 @@ public class MapActivity extends ActionBarActivity {
 
         placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
-           // if (result.get(i) != null) {
+            if (result.get(i) != null) {
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
@@ -137,7 +137,7 @@ public class MapActivity extends ActionBarActivity {
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
                         .snippet(result.get(i).getVicinity())));
-          //  }
+            }
         }
 
       /*  if(deletions != null){
