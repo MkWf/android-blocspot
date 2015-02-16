@@ -107,6 +107,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             distance = (TextView) itemView.findViewById(R.id.point_item_distance);
             popupMenu = (ImageButton) itemView.findViewById(R.id.point_item_popup_menu);
             visitedBox = (CheckBox) itemView.findViewById(R.id.point_item_checkbox);
+            visitedBox.setClickable(false);
             noteView = itemView;
             
             itemView.setOnClickListener(this);
@@ -119,6 +120,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             location.setText(item.getLocation());
             note.setText(item.getNote());
             distance.setText(item.getDistance());
+
+            if(this.item.isVisited()){
+                visitedBox.setChecked(true);
+            }else{
+                visitedBox.setChecked(false);
+            }
         }
 
         @Override
