@@ -54,7 +54,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             @Override
             public void onSuccess(List<PointItem> pointItems) {
                 if (!pointItems.isEmpty()) {
-                    items.addAll(0, pointItems);
+                    //items.addAll(0, pointItems);
                     itemAdapter.notifyItemRangeInserted(0, pointItems.size());
                 }
             }
@@ -107,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onPopupMenuClicked(ItemAdapter itemAdapter, View view, PointItem item){
-        clickedItemPosition = items.indexOf(item);
+        clickedItemPosition = BlocSpotApplication.getSharedDataSource().getPoints().indexOf(item);
         clickedItem = item;
         //View point = recyclerView.getLayoutManager().findViewByPosition(clickedItemPosition);
         //noteView = point;
@@ -155,7 +155,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 break;
 
             case R.id.popup_delete :
-                items.remove(clickedItem);
+                BlocSpotApplication.getSharedDataSource().getPoints().remove(clickedItemPosition);
                 deletions.add(clickedItemPosition);
                 itemAdapter.notifyItemRemoved(clickedItemPosition);
                 break;
@@ -165,11 +165,11 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public PointItem getPointItem(ItemAdapter itemAdapter, int position) {
-        if(items.size() != 0){
+        if(BlocSpotApplication.getSharedDataSource().getPoints().size() != 0){
             if(dialog != null && dialog.isShowing()){
                 dialog.dismiss();
             }
-            return items.get(position);
+            return BlocSpotApplication.getSharedDataSource().getPoints().get(position);
         }else{
             dialog = new ProgressDialog(this);
             dialog.setCancelable(false);
@@ -182,11 +182,11 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public int getItemCount(ItemAdapter itemAdapter) {
-        if(items == null){
+        if(BlocSpotApplication.getSharedDataSource().getPoints() == null){
             return 0;
         }
-        if(items.size() != 0){
-            return items.size();
+        if(BlocSpotApplication.getSharedDataSource().getPoints().size() != 0){
+            return BlocSpotApplication.getSharedDataSource().getPoints().size();
         }
         return 0;
     }

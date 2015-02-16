@@ -98,11 +98,11 @@ public class MapActivity extends ActionBarActivity {
                 if(nav != -1){
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLat(),
-                                    BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLon())) // Sets the center of the map to
-                                    // Mountain View
-                            .zoom(18) // Sets the zoom
-                            .tilt(90) // Sets the tilt of the camera to 30 degrees
-                            .build(); // Creates a CameraPosition from the builder
+                                    BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLon()))
+
+                            .zoom(18)
+                            .tilt(90)
+                            .build();
                     mMap.moveCamera(CameraUpdateFactory
                             .newCameraPosition(cameraPosition));
                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLat(),
@@ -123,11 +123,12 @@ public class MapActivity extends ActionBarActivity {
 
         List<PointItem> result = BlocSpotApplication.getSharedDataSource().getPoints();
         if (result == null || result.size() == 0) {
+            return;
         }
 
         placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
-            if (result.get(i) != null) {
+           // if (result.get(i) != null) {
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
@@ -136,16 +137,16 @@ public class MapActivity extends ActionBarActivity {
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
                         .snippet(result.get(i).getVicinity())));
-            }
+          //  }
         }
 
-        if(deletions != null){
+      /*  if(deletions != null){
             for(int i = 0; i < deletions.size(); i++){
                 int k = deletions.get(i);
                 placeMarkers.get(k).remove();
                 placeMarkers.remove(k);
             }
-        }
+        }*/
         dialog.dismiss();
     }
 
