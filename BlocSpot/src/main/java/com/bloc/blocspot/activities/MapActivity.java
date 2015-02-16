@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -43,6 +44,7 @@ public class MapActivity extends ActionBarActivity {
     private Toolbar toolbar;
     List<Marker> placeMarkers;
     ArrayList<Integer> deletions;
+    private int nav = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class MapActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         deletions = intent.getIntegerArrayListExtra("data");
+
+        nav = intent.getIntExtra("navigate", -1);
 
         initMap();
         loadMap(BlocSpotApplication.getSharedDataSource().getPlaces());
@@ -91,7 +95,21 @@ public class MapActivity extends ActionBarActivity {
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                displayAllPointsInView(placeMarkers);
+                if(nav != -1){
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLat(),
+                                    BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLon())) // Sets the center of the map to
+                                    // Mountain View
+                            .zoom(18) // Sets the zoom
+                            .tilt(90) // Sets the tilt of the camera to 30 degrees
+                            .build(); // Creates a CameraPosition from the builder
+                    mMap.moveCamera(CameraUpdateFactory
+                            .newCameraPosition(cameraPosition));
+                   // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLat(),
+                            //BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLon()), 15));
+                }else{
+                    displayAllPointsInView(placeMarkers);
+                }
             }
         });
     }
@@ -121,7 +139,7 @@ public class MapActivity extends ActionBarActivity {
             }
         }
 
-        if(deletions != null || deletions.size() != 0){
+        if(deletions != null){
             for(int i = 0; i < deletions.size(); i++){
                 int k = deletions.get(i);
                 placeMarkers.get(k).remove();

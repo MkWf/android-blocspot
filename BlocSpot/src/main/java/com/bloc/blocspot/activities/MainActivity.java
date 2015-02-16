@@ -122,6 +122,9 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     public boolean onMenuItemClick (MenuItem item){
         switch (item.getItemId()) {
             case R.id.popup_navigate :
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                intent.putExtra("navigate", clickedItemPosition);
+                startActivity(intent);
                 break;
             case R.id.popup_choose_category :
                 break;
