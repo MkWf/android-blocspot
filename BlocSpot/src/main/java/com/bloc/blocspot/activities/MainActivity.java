@@ -127,6 +127,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 startActivity(intent);
                 break;
             case R.id.popup_choose_category :
+
                 break;
 
             case R.id.popup_edit_note :
@@ -135,6 +136,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setText(clickedItem.getNote());
                 builder.setView(input);
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
