@@ -1,5 +1,6 @@
 package com.bloc.blocspot.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Location;
@@ -7,7 +8,13 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.api.model.PointItem;
@@ -34,7 +41,7 @@ import java.util.List;
  * @Date   10/3/2013
  *
  */
-public class MapActivity extends ActionBarActivity {
+public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarkerClickListener, View.OnClickListener {
     private String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
     private final String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
@@ -43,8 +50,13 @@ public class MapActivity extends ActionBarActivity {
     private Location loc;
     private Toolbar toolbar;
     List<Marker> placeMarkers;
+    Marker userPosition;
     //ArrayList<Integer> deletions;
     private int nav = 0;
+    private AlertDialog.Builder markerDialog;
+    private AlertDialog dialogDestroyer;
+    private PointItem clickedMarkerItem;
+    private int clickedMarkerPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +98,13 @@ public class MapActivity extends ActionBarActivity {
                     }
 
                 });*/
+    }
+
+    private void initMap() {
+        mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+                .getMap();
+        mMap.setOnMarkerClickListener(this);
+
     }
 
     public void loadMap(List<Place> place){
@@ -149,7 +168,6 @@ public class MapActivity extends ActionBarActivity {
                         .snippet(result.get(i).getVicinity())));
             }
         }
-
       /*  if(deletions != null){
             for(int i = 0; i < deletions.size(); i++){
                 int k = deletions.get(i);
@@ -161,31 +179,12 @@ public class MapActivity extends ActionBarActivity {
     }
 
     public void setUserPoint(){
-        Marker userPosition = mMap.addMarker(new MarkerOptions()
+        userPosition = mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
                         new LatLng(BlocSpotApplication.getSharedDataSource().getUserPosition().getLatitude(),
                                 BlocSpotApplication.getSharedDataSource().getUserPosition().getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
-        userPosition.showInfoWindow();
-    }
-
-
-           /* CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(result.get(1).getLatitude(), result
-                            .get(1).getLongitude())) // Sets the center of the map to
-                            // Mountain View
-                    .zoom(14) // Sets the zoom
-                    .tilt(30) // Sets the tilt of the camera to 30 degrees
-                    .build(); // Creates a CameraPosition from the builder
-            mMap.animateCamera(CameraUpdateFactory
-                    .newCameraPosition(cameraPosition));*/
-    //}
-
-
-    private void initMap() {
-        mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-                .getMap();
     }
 
     public void displayAllPointsInView(List<Marker> items) {
@@ -201,6 +200,96 @@ public class MapActivity extends ActionBarActivity {
 
         mMap.animateCamera(cu);
     }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if(marker.equals(userPosition)){
+            return false;
+        }
+        clickedMarkerPosition = placeMarkers.indexOf(marker);
+        clickedMarkerItem = BlocSpotApplication.getSharedDataSource().getPoints().get(clickedMarkerPosition);
+
+        //#1
+        markerDialog = new AlertDialog.Builder(MapActivity.this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.point_item_map_alert, null);
+        markerDialog.setView(dialogView);
+
+        TextView location = (TextView) dialogView.findViewById(R.id.map_dialog_location);
+        TextView note = (TextView) dialogView.findViewById(R.id.map_dialog_note);
+        CheckBox visited = (CheckBox) dialogView.findViewById(R.id.map_dialog_checkbox);
+        Button category = (Button) dialogView.findViewById(R.id.map_dialog_category_button);
+        ImageButton navigate = (ImageButton) dialogView.findViewById(R.id.map_dialog_navigate);
+        ImageButton share = (ImageButton) dialogView.findViewById(R.id.map_dialog_share);
+        ImageButton delete = (ImageButton) dialogView.findViewById(R.id.map_dialog_delete);
+
+        location.setText(clickedMarkerItem.getLocation());
+        note.setText(clickedMarkerItem.getNote());
+
+        if(clickedMarkerItem.isVisited()){
+            visited.setChecked(true);
+        }else{
+            visited.setChecked(false);
+        }
+
+        visited.setOnClickListener(this);
+        navigate.setOnClickListener(this);
+        share.setOnClickListener(this);
+        delete.setOnClickListener(this);
+
+        dialogDestroyer = markerDialog.show();
+
+        //#2
+       /* final Dialog dialog = new Dialog(MapActivity.this);
+        dialog.setContentView(R.layout.point_item_map_dialog);
+        TextView location = (TextView) dialog.findViewById(R.id.map_dialog_location);
+        TextView note = (TextView) dialog.findViewById(R.id.map_dialog_note);
+        location.setText(item.getLocation());
+        note.setText(item.getNote());
+        dialog.show();*/
+
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.map_dialog_checkbox:
+                if(clickedMarkerItem.isVisited()){
+                    clickedMarkerItem.setVisited(false);
+                    placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
+                }else{
+                    clickedMarkerItem.setVisited(true);
+                    placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.visited_pin));
+                }
+                break;
+            case R.id.map_dialog_category_button:
+
+                break;
+            case R.id.map_dialog_navigate:
+                dialogDestroyer.dismiss();
+                placeMarkers.get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(clickedMarkerItem)).showInfoWindow();
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(clickedMarkerItem)).getLat(),
+                                BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(clickedMarkerItem)).getLon()))
+                        .zoom(18)
+                        .tilt(90)
+                        .build();
+                mMap.moveCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+                break;
+            case R.id.map_dialog_share:
+                dialogDestroyer.dismiss();
+
+                break;
+            case R.id.map_dialog_delete:
+                dialogDestroyer.dismiss();
+                placeMarkers.remove(clickedMarkerPosition).remove();
+                BlocSpotApplication.getSharedDataSource().getPoints().remove(clickedMarkerItem);
+                break;
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

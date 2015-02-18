@@ -232,4 +232,9 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         }
         return 0;
     }
+
+    @Override protected void onResume () {
+        super.onResume();
+        itemAdapter.notifyDataSetChanged();
+    }
 }

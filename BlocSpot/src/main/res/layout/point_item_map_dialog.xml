@@ -1,0 +1,71 @@
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map_dialog_top"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/map_dialog_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location"/>
+
+        <CheckBox
+            android:id="@+id/map_dialog_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@drawable/cb_check_checkbox"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map_dialog_middle"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/map_dialog_top">
+
+        <TextView
+            android:id="@+id/map_dialog_note"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Note"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/map_dialog_bottom"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/map_dialog_middle">
+
+        <Button
+            android:id="@+id/map_dialog_category_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_overflow"/>
+
+        <ImageButton
+            android:id="@+id/map_dialog_navigate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_overflow"/>
+
+        <ImageButton
+            android:id="@+id/map_dialog_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_overflow"/>
+
+        <ImageButton
+            android:id="@+id/map_dialog_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_overflow"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
