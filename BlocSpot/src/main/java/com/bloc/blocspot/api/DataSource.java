@@ -95,6 +95,7 @@ public class DataSource {
                         items.get(i).setDistanceValue(dist);
                         items.get(i).setLat(places.get(i).getLatitude());
                         items.get(i).setLon(places.get(i).getLongitude());
+                        items.get(i).setVicinity(places.get(i).getVicinity());
                     }
                 }
                 Collections.sort(items, new PointItem());

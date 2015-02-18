@@ -130,36 +130,31 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 break;
             case R.id.popup_choose_category :
                 /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
-                                    //#1
-                                LayoutInflater inflater = getLayoutInflater();
-                                categBuilder.setView(inflater.inflate(R.layout.category_dialog, null));
-                                    //#2
-                                categBuilder.setView(R.layout.category_dialog);
-                                    //both
-                                categBuilder.setSingleChoiceItems(categories, -1, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        switch (which) {
-                                            case 1:
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                });
+                categBuilder.setView(R.layout.category_dialog);
+                categBuilder.setSingleChoiceItems(categories, -1, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 1:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                });
                 categBuilder.show(); */
 
 
                  /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
-                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
-                                adapter.add("restaurants");
-                                adapter.add("bars");
-                                adapter.add("stores");
-                                categBuilder.setTitle("Choose Category");
-                                categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int item) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
+                adapter.add("restaurants");
+                adapter.add("bars");
+                adapter.add("stores");
+                categBuilder.setView(R.layout.category_dialog);
+                categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
 
-                                    }
-                                });
+                    }
+                });
                 categBuilder.show();*/
                 break;
 

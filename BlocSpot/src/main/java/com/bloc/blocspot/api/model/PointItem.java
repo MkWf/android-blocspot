@@ -25,6 +25,7 @@ public class PointItem implements Comparator<PointItem> {
         this.distanceValue = 0;
         this.lat = 0;
         this.lon = 0;
+        this.vicinity = "";
     }
 
     public String getDistance() {
@@ -69,9 +70,7 @@ public class PointItem implements Comparator<PointItem> {
 
     public void setLat(double lat) { this.lat = lat; }
 
-    public void setVicinity(String vicinity) {
-        this.note = vicinity;
-    }
+    public void setVicinity(String vicinity) { this.vicinity = vicinity; }
 
     public boolean isVisited() { return visited; }
 
