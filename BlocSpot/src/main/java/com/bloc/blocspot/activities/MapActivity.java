@@ -96,6 +96,7 @@ public class MapActivity extends ActionBarActivity {
             @Override
             public void onMapLoaded() {
                 if(nav != -1){
+                    placeMarkers.get(nav).showInfoWindow();
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLat(),
                                     BlocSpotApplication.getSharedDataSource().getPoints().get(nav).getLon()))
@@ -160,12 +161,13 @@ public class MapActivity extends ActionBarActivity {
     }
 
     public void setUserPoint(){
-        mMap.addMarker(new MarkerOptions()
+        Marker userPosition = mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
                         new LatLng(BlocSpotApplication.getSharedDataSource().getUserPosition().getLatitude(),
                                 BlocSpotApplication.getSharedDataSource().getUserPosition().getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
+        userPosition.showInfoWindow();
     }
 
 
