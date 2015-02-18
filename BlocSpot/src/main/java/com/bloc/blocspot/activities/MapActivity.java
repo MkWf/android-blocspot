@@ -128,7 +128,7 @@ public class MapActivity extends ActionBarActivity {
 
         placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
-            if (result.get(i) != null) {
+            if (result.get(i) != null && !result.get(i).isVisited())  {
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
@@ -136,6 +136,15 @@ public class MapActivity extends ActionBarActivity {
                                         .get(i).getLon()))
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
+                        .snippet(result.get(i).getVicinity())));
+            }else if(result.get(i) != null && result.get(i).isVisited()){
+                placeMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(result.get(i).getLocation())
+                        .position(
+                                new LatLng(result.get(i).getLat(), result
+                                        .get(i).getLon()))
+                        .icon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.visited_pin))
                         .snippet(result.get(i).getVicinity())));
             }
         }

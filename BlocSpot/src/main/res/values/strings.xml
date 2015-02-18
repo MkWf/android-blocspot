@@ -13,6 +13,7 @@
     <string name="place_search">Searching for places..</string>
     <string name="menu_switch_to_list">Switch To List</string>
     <string name="menu_filter_by_category">Filter By Category</string>
+    <string name="choose_category">Choose Category</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>

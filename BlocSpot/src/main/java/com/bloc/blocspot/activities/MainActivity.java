@@ -1,5 +1,6 @@
 package com.bloc.blocspot.activities;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -44,6 +45,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private RecyclerView recyclerView;
     private Toolbar toolbar;
     private ArrayList<Integer> deletions = new ArrayList<>();
+    private String [] categories = {"restaurants", "bars", "stores"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,19 +129,50 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 startActivity(intent);
                 break;
             case R.id.popup_choose_category :
+                /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
+                                    //#1
+                                LayoutInflater inflater = getLayoutInflater();
+                                categBuilder.setView(inflater.inflate(R.layout.category_dialog, null));
+                                    //#2
+                                categBuilder.setView(R.layout.category_dialog);
+                                    //both
+                                categBuilder.setSingleChoiceItems(categories, -1, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        switch (which) {
+                                            case 1:
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                });
+                categBuilder.show(); */
 
+
+                 /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
+                                adapter.add("restaurants");
+                                adapter.add("bars");
+                                adapter.add("stores");
+                                categBuilder.setTitle("Choose Category");
+                                categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int item) {
+
+                                    }
+                                });
+                categBuilder.show();*/
                 break;
 
             case R.id.popup_edit_note :
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Note for " + clickedItem.getLocation());
+                AlertDialog.Builder noteBuilder = new AlertDialog.Builder(this);
+                noteBuilder.setTitle("Note for " + clickedItem.getLocation());
 
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setText(clickedItem.getNote());
-                builder.setView(input);
+                noteBuilder.setView(input);
 
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                noteBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         clickedItem.setNote(input.getText().toString());
@@ -147,13 +180,13 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                         //noteView.
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                noteBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
-                builder.show();
+                noteBuilder.show();
                 break;
 
             case R.id.popup_delete :
@@ -163,6 +196,13 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 break;
         }
         return false;
+    }
+    @TargetApi(21)
+    @SuppressWarnings("deprecation")
+    public void AlertDialog(){
+        AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
+        categBuilder.setView(R.layout.category_dialog);
+        categBuilder.show();
     }
 
     @Override

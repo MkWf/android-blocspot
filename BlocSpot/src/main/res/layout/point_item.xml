@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/list_selector">>
+    android:background="@drawable/list_selector">
 
     <View
         android:id="@+id/point_item_leftpadding"
@@ -27,7 +27,7 @@
         android:layout_below="@id/point_item_toppadding"
         android:layout_marginBottom="4dp"
         android:button="@drawable/cb_check_checkbox"
-        android:background="@color/red"/>
+        android:background="@color/white"/>
 
     <TextView
         style="@style/Title"
