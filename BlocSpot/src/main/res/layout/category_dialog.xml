@@ -14,13 +14,13 @@
         android:layout_gravity="center"/>
 
     <ImageButton
+        android:id="@+id/category_dialog_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_marginTop="8dp"
         android:layout_alignParentRight="true"
         android:src="@drawable/category_add"
-        android:background="@color/transparent"
         android:layout_gravity="center"/>
 
 </RelativeLayout>

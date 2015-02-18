@@ -12,12 +12,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.adapters.ItemAdapter;
@@ -46,6 +50,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private Toolbar toolbar;
     private ArrayList<Integer> deletions = new ArrayList<>();
     private String [] categories = {"restaurants", "bars", "stores"};
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,8 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             public void onError(String errorMessage) {
             }
         });
+
+        adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         setSupportActionBar(toolbar);
@@ -129,8 +136,20 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 startActivity(intent);
                 break;
             case R.id.popup_choose_category :
-                /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
-                categBuilder.setView(R.layout.category_dialog);
+               /* AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
+
+                LayoutInflater inflater = this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.category_dialog, null);
+
+                ImageButton add = (ImageButton) dialogView.findViewById(R.id.category_dialog_add_button);
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                categBuilder.setView(dialogView);
                 categBuilder.setSingleChoiceItems(categories, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -141,21 +160,30 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                         }
                     }
                 });
-                categBuilder.show(); */
+                categBuilder.show();*/
 
 
-                 /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
-                adapter.add("restaurants");
-                adapter.add("bars");
-                adapter.add("stores");
-                categBuilder.setView(R.layout.category_dialog);
+                AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
+                LayoutInflater inflater = this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.category_dialog, null);
+
+                ImageButton add = (ImageButton) dialogView.findViewById(R.id.category_dialog_add_button);
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        v.setBackgroundColor(R.color.red);
+                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
+                        adapter.add("hotels");
+                    }
+                });
+
+                categBuilder.setView(dialogView);
                 categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
 
                     }
                 });
-                categBuilder.show();*/
+                categBuilder.show();
                 break;
 
             case R.id.popup_edit_note :
