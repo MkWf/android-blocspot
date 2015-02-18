@@ -57,6 +57,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
     private AlertDialog dialogDestroyer;
     private PointItem clickedMarkerItem;
     private int clickedMarkerPosition = -1;
+    public final static String EXTRA_MESSAGE = "com.bloc.blocspot.activities.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,7 +281,12 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                 break;
             case R.id.map_dialog_share:
                 dialogDestroyer.dismiss();
-
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT,
+                        String.format("Check this place out: %s, %s ", clickedMarkerItem.getLocation(), clickedMarkerItem.getVicinity()));
+                shareIntent.setType("text/plain");
+                Intent chooser = Intent.createChooser(shareIntent, getString(R.string.share_chooser_title));
+                startActivity(chooser);
                 break;
             case R.id.map_dialog_delete:
                 dialogDestroyer.dismiss();
