@@ -20,7 +20,7 @@ public class PointItem implements Comparator<PointItem> {
         this.distance = "";
         this.note = "Add a note";
         this.location = "";
-        this.category = "";
+        this.category = "All";
         this.visited = false;
         this.distanceValue = 0;
         this.lat = 0;
