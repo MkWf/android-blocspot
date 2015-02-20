@@ -6,7 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
  * Created by Mark on 2/18/2015.
  */
 public abstract class Table {
-    protected static final String COLUMN_ID = "id";
+
+    public static interface Builder {
+        public long insert(SQLiteDatabase writableDB);
+    }
+
+    protected static final String COLUMN_ID = "_id";
 
     public abstract String getName();
 

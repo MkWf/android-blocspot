@@ -1,7 +1,9 @@
 package com.bloc.blocspot.api;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -9,7 +11,12 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.api.model.PointItem;
+import com.bloc.blocspot.api.model.database.DatabaseOpenHelper;
+import com.bloc.blocspot.api.model.database.table.CategoryTable;
+import com.bloc.blocspot.api.model.database.table.PointTable;
+import com.bloc.blocspot.blocspot.BuildConfig;
 import com.bloc.blocspot.places.Place;
 import com.bloc.blocspot.places.PlacesService;
 
@@ -32,6 +39,10 @@ public class DataSource {
     private Location loc;
     private List<Place> places;
     private List<PointItem> items;
+    private DatabaseOpenHelper databaseOpenHelper;
+    private CategoryTable categoryTable;
+    private PointTable pointTable;
+    SQLiteDatabase writableDatabase;
 
     public static interface Callback<Result> {
         public void onSuccess(Result result);
@@ -48,6 +59,22 @@ public class DataSource {
     public DataSource(Context context) {
         this.context = context;
         executorService = Executors.newSingleThreadExecutor();
+
+        categoryTable = new CategoryTable();
+        pointTable = new PointTable();
+
+        databaseOpenHelper = new DatabaseOpenHelper(BlocSpotApplication.getSharedInstance(),
+                categoryTable, pointTable);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (BuildConfig.DEBUG && false) {
+                    BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
+                }
+
+            }
+        }).start();
     }
 
     public Context getContext(){
@@ -91,11 +118,23 @@ public class DataSource {
                         double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
+
                         items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
                         items.get(i).setDistanceValue(dist);
                         items.get(i).setLat(places.get(i).getLatitude());
                         items.get(i).setLon(places.get(i).getLongitude());
                         items.get(i).setVicinity(places.get(i).getVicinity());
+
+                        writableDatabase = databaseOpenHelper.getWritableDatabase();
+
+                        ContentValues v = new ContentValues();
+
+                        long pointItemId = new PointTable.Builder()
+                                .setLocation(items.get(i).getLocation())
+                                .setLatitude(items.get(i).getLat())
+                                .setLongitude(items.get(i).getLon())
+                                .setVicinity(items.get(i).getVicinity())
+                                .insert(writableDatabase);
                     }
                 }
                 Collections.sort(items, new PointItem());
