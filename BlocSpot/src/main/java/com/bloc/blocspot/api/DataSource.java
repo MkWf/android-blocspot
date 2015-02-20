@@ -1,8 +1,8 @@
 package com.bloc.blocspot.api;
 
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Criteria;
 import android.location.Location;
@@ -73,6 +73,7 @@ public class DataSource {
                     BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
                 }
 
+
             }
         }).start();
     }
@@ -109,32 +110,41 @@ public class DataSource {
                 if (places.size() == 0) {
                     return;
                 }
-                items = new ArrayList<PointItem>(places.size());
+                items = new ArrayList<PointItem>();
+               //items = new ArrayList<PointItem>(places.size());
                 for (int i = 0; i < places.size(); i++) {
                     if (places.get(i) != null) {
-                        items.add(new PointItem());
-                        items.get(i).setLocation(places.get(i).getName());
+                    //    items.add(new PointItem());
+                   //     items.get(i).setLocation(places.get(i).getName());
+
+                     //   items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
+                     //   items.get(i).setDistanceValue(dist);
+                      //  items.get(i).setLat(places.get(i).getLatitude());
+                      //  items.get(i).setLon(places.get(i).getLongitude());
+                      //  items.get(i).setVicinity(places.get(i).getVicinity());
+
+                        writableDatabase = databaseOpenHelper.getWritableDatabase();
+
+                        long pointItemId = new PointTable.Builder()
+                                .setLocation(places.get(i).getName())
+                                .setLatitude(places.get(i).getLatitude())
+                                .setLongitude(places.get(i).getLongitude())
+                                .setVicinity(places.get(i).getVicinity())
+                                .insert(writableDatabase);
+
+                        Cursor itemCursor = pointTable.fetchRow(databaseOpenHelper.getReadableDatabase(), pointItemId);
+                        itemCursor.moveToFirst();
+                        PointItem newPointItem = itemFromCursor(itemCursor);
 
                         double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
+                        newPointItem.setDistance("< " + Integer.toString(dist) + " mi");
+                        newPointItem.setDistanceValue(dist);
+                        newPointItem.setNote("Add a note");
 
-                        items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
-                        items.get(i).setDistanceValue(dist);
-                        items.get(i).setLat(places.get(i).getLatitude());
-                        items.get(i).setLon(places.get(i).getLongitude());
-                        items.get(i).setVicinity(places.get(i).getVicinity());
-
-                        writableDatabase = databaseOpenHelper.getWritableDatabase();
-
-                        ContentValues v = new ContentValues();
-
-                        long pointItemId = new PointTable.Builder()
-                                .setLocation(items.get(i).getLocation())
-                                .setLatitude(items.get(i).getLat())
-                                .setLongitude(items.get(i).getLon())
-                                .setVicinity(items.get(i).getVicinity())
-                                .insert(writableDatabase);
+                        items.add(newPointItem);
+                        itemCursor.close();
                     }
                 }
                 Collections.sort(items, new PointItem());
@@ -148,6 +158,13 @@ public class DataSource {
                 });
             }
         });
+    }
+
+    static PointItem itemFromCursor(Cursor cursor) {
+        return new PointItem(PointTable.getLocation(cursor), PointTable.getNote(cursor),
+                PointTable.getLatitude(cursor), PointTable.getLongitude(cursor),
+                PointTable.getVicinity(cursor), PointTable.getVisited(cursor),
+                PointTable.getCategory(cursor));
     }
 
     public List<Place> getPlaces(){

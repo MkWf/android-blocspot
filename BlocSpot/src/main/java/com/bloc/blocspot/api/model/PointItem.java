@@ -28,6 +28,16 @@ public class PointItem implements Comparator<PointItem> {
         this.vicinity = "";
     }
 
+    public PointItem(String location, String note, double lat, double lon, String vicinity, boolean visited, String category){
+        this.location = location;
+        this.note = note;
+        this.lat = lat;
+        this.lon = lon;
+        this.vicinity = vicinity;
+        this.visited = visited;
+        this.category = category;
+    }
+
     public String getDistance() {
         return distance;
     }
