@@ -43,7 +43,7 @@ public class CategoryTable extends Table {
     @Override
     public String getCreateStatement() {
         return "CREATE TABLE " + getName() + " ("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COLUMN_ID + " INTEGER PRIMARY KEY,"
                 + COLUMN_CATEGORY_NAME + " TEXT,"
                 + COLUMN_CATEGORY_COLOR_RED + " INTEGER,"
                 + COLUMN_CATEGORY_COLOR_GREEN + " INTEGER,"

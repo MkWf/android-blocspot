@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.bloc.blocspot.BlocSpotApplication;
+import com.bloc.blocspot.api.model.Category;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.api.model.database.DatabaseOpenHelper;
 import com.bloc.blocspot.api.model.database.table.CategoryTable;
@@ -39,6 +40,7 @@ public class DataSource {
     private Location loc;
     private List<Place> places;
     private List<PointItem> items;
+    private List<Category> categories;
     private DatabaseOpenHelper databaseOpenHelper;
     private CategoryTable categoryTable;
     private PointTable pointTable;
@@ -147,6 +149,13 @@ public class DataSource {
                         itemCursor.close();
                     }
                 }
+                new CategoryTable.Builder()
+                        .setName("All")
+                        .setColor(255, 255, 255)
+                        .insert(writableDatabase);
+                categories = new ArrayList<Category>();
+                categories.add(new Category("All", 255, 255, 255));
+
                 Collections.sort(items, new PointItem());
 
                 final List<PointItem> finalItems = items;
