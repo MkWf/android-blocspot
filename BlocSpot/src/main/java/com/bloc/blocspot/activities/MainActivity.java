@@ -136,34 +136,97 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 startActivity(intent);
                 break;
             case R.id.popup_choose_category :
-               /* AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
+                AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
 
                 LayoutInflater inflater = this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.category_dialog, null);
 
                 ImageButton add = (ImageButton) dialogView.findViewById(R.id.category_dialog_add_button);
+                ImageButton minus = (ImageButton) dialogView.findViewById(R.id.category_dialog_minus_button);
                 add.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder newCateg = new AlertDialog.Builder(MainActivity.this);
+                        newCateg.setTitle("Add a new category");
+
+                        final EditText input = new EditText(MainActivity.this);
+                        input.setInputType(InputType.TYPE_CLASS_TEXT);
+                        newCateg.setView(input);
+
+                        newCateg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            if(adapter.getCount() == 7){
+                                Toast.makeText(getApplicationContext(), "Maximum number of categories reached. Remove a category first", Toast.LENGTH_LONG).show();
+                            }
+                            if(input.getText().toString().isEmpty()){
+                                Toast.makeText(getApplicationContext(), "Category must have a name", Toast.LENGTH_LONG).show();
+                            }else{
+                                if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())){
+                                    Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
+                                }else{
+                                    for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
+                                        if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
+                                            continue;
+                                        }
+                                        else{
+                                            BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
+                                            //clickedItem.setCategory(input.getText().toString());
+                                            //itemAdapter.notifyDataSetChanged();
+                                            adapter.add(input.getText().toString());
+                                            adapter.notifyDataSetChanged();
+                                            break;
+                                        }
+                                    }
+                                    dialog.dismiss();
+                                }
+                            }
+                            }
+                        });
+                        newCateg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        newCateg.show();
                     }
                 });
-
-                categBuilder.setView(dialogView);
-                categBuilder.setSingleChoiceItems(categories, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 1:
-                                break;
-                            default:
-                                break;
+                minus.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(clickedItem.getCategory().equals("All")){
+                            Toast.makeText(getApplicationContext(), "Cannot remove this category", Toast.LENGTH_LONG).show();
+                        }else{
+                            int ind = adapter.getPosition(clickedItem.getCategory());
+                            adapter.remove(clickedItem.getCategory());
+                            BlocSpotApplication.getSharedDataSource().removeCategory(clickedItem.getCategory());
+                            if(adapter.getCount() > ind){
+                                clickedItem.setCategory(adapter.getItem(ind));
+                            }else{
+                                clickedItem.setCategory("All");
+                            }
+                           // if(!adapter.getItem(ind).isEmpty()){
+                             //   clickedItem.setCategory(adapter.getItem(ind));
+                            //}
+                            //clickedItem.setCategory("All");
+                            itemAdapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 });
-                categBuilder.show();*/
+                adapter.clear();
+                adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
+                categBuilder.setView(dialogView);
+                categBuilder.setSingleChoiceItems(adapter, adapter.getPosition(clickedItem.getCategory()), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        clickedItem.setCategory(adapter.getItem(which));
+                        itemAdapter.notifyDataSetChanged();
+                    }
+                });
+                categBuilder.show();
 
-
-                AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
+                /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
                 LayoutInflater inflater = this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.category_dialog, null);
 
@@ -180,10 +243,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 categBuilder.setView(dialogView);
                 categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
-
+                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
                     }
                 });
-                categBuilder.show();
+                categBuilder.show();*/
                 break;
 
             case R.id.popup_edit_note :

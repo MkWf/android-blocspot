@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="transparent">#00000000</color>
-    <color name="red">#FF0000</color>
     <color name="primary">#17AFCA</color>
     <color name="primary_dark">#138FA5</color>
     <color name="accent">#FFFF7B</color>
     <color name="windowBackground">#DFDFDF</color>
     <color name="divider">@color/black_12</color>
-    <color name="white">#FFFFFF</color>
 
     <color name="text_primary">@color/black_87</color>
     <color name="text_secondary">@color/black_54</color>
@@ -19,5 +17,14 @@
     <color name="black_54">#79000000</color>
     <color name="black_26">#3A000000</color>
     <color name="black_12">#1B000000</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="green">#00FF00</color>
+    <color name="blue">#0000FF</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="aqua">#00FFFF</color>
+    <color name="magenta">#FF00FF</color>
+
 
 </resources>

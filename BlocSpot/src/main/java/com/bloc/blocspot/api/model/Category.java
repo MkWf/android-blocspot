@@ -6,19 +6,19 @@ package com.bloc.blocspot.api.model;
 public class Category {
 
     private String name;
-    int [] color = new int [3];
+    private String color;
 
 
-    public Category(String name, int red, int green, int blue){
+    public Category(String name, String color){
         setName(name);
-        setColor(red, green, blue);
+        setColor(color);
     }
 
     public String getName(){
         return name;
     }
 
-    public int [] getColor(){
+    public String getColor(){
         return color;
     }
 
@@ -26,9 +26,7 @@ public class Category {
         this.name = name;
     }
 
-    public void setColor(int red, int green, int blue){
-        color[0] = red;
-        color[1] = green;
-        color[2] = blue;
+    public void setColor(String color){
+        this.color = color;
     }
 }

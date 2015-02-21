@@ -5,6 +5,7 @@
 
     <TextView
         style="@style/Title"
+        android:id="@+id/category_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/choose_category"
@@ -19,8 +20,17 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
         android:layout_marginTop="8dp"
-        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/category_title"
         android:src="@drawable/category_add"
+        android:layout_gravity="center"/>
+
+    <ImageButton
+        android:id="@+id/category_dialog_minus_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/category_minus"
         android:layout_gravity="center"/>
 
 </RelativeLayout>

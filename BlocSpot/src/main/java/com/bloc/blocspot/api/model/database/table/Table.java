@@ -54,4 +54,12 @@ public abstract class Table {
     protected static boolean getBoolean(Cursor cursor, String column) {
         return getLong(cursor, column) == 1l;
     }
+
+    protected static int getInteger(Cursor cursor, String column) {
+        int columnIndex = cursor.getColumnIndex(column);
+        if (columnIndex == -1) {
+            return -1;
+        }
+        return cursor.getInt(columnIndex);
+    }
 }

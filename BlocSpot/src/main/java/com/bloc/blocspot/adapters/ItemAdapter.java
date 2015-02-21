@@ -8,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.bloc.blocspot.BlocSpotApplication;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
 
@@ -126,6 +127,24 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             }else{
                 visitedBox.setChecked(false);
             }
+
+            String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(item.getCategory());
+            if(color.equals("White")){
+                visitedBox.setBackgroundResource(R.color.white);
+            }else if(color.equals("Red")){
+                visitedBox.setBackgroundResource(R.color.red);
+            }else if(color.equals("Green")){
+                visitedBox.setBackgroundResource(R.color.green);
+            }else if(color.equals("Blue")){
+                visitedBox.setBackgroundResource(R.color.blue);
+            }else if(color.equals("Yellow")){
+                visitedBox.setBackgroundResource(R.color.yellow);
+            }else if(color.equals("Aqua")){
+                visitedBox.setBackgroundResource(R.color.aqua);
+            }else if(color.equals("Magenta")){
+                visitedBox.setBackgroundResource(R.color.magenta);
+            }
+
         }
 
         @Override
