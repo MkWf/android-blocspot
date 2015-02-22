@@ -288,6 +288,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 noteBuilder.show();
                 break;
 
+            case R.id.popup_save:
+                BlocSpotApplication.getSharedDataSource().insertPoint(clickedItem);
+                break;
+
             case R.id.popup_delete :
                 BlocSpotApplication.getSharedDataSource().getPoints().remove(clickedItemPosition);
                // deletions.add(clickedItemPosition);

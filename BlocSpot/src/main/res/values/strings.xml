@@ -9,12 +9,13 @@
     <string name="popup_navigate">Navigate To...</string>
     <string name="popup_choose_category">Choose Category</string>
     <string name="popup_edit_note">Edit Note</string>
-    <string name="popup_delete">Delete</string>
+    <string name="popup_delete">Delete Point</string>
     <string name="place_search">Searching for places..</string>
     <string name="menu_switch_to_list">Switch To List</string>
     <string name="menu_filter_by_category">Filter By Category</string>
     <string name="choose_category">Choose Category</string>
     <string name="share_chooser_title">Share with...</string>
+    <string name="save_point">Save Point</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>

@@ -13,8 +13,12 @@
         android:title="@string/popup_edit_note"
         android:orderInCategory="2"/>
 
+    <item android:id="@+id/popup_save"
+        android:title="@string/save_point"
+        android:orderInCategory="3"/>
+
     <item android:id="@+id/popup_delete"
         android:title="@string/popup_delete"
-        android:orderInCategory="2"/>
+        android:orderInCategory="4"/>
 
 </menu>

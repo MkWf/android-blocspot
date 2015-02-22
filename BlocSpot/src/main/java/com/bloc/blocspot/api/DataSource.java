@@ -292,6 +292,15 @@ public class DataSource {
         writableDatabase.delete(categoryTable.getName(), "category_name = ?", new String[] {category});
     }
 
+    public void insertPoint(PointItem item){
+        new PointTable.Builder()
+                .setLocation(item.getLocation())
+                .setLatitude(item.getLat())
+                .setLongitude(item.getLon())
+                .setVicinity(item.getVicinity())
+                .insert(writableDatabase);
+    }
+
     public List<PointItem> getPoints(){ return items; }
 
     public double distBetweenGPSPointsInMiles(
