@@ -299,9 +299,49 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                 if(clickedMarkerItem.isVisited()){
                     clickedMarkerItem.setVisited(false);
                     placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.pin));
+                    String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(clickedMarkerItem.getCategory());
+                    if(color.equals("Red")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.red_pin));
+                    }else if(color.equals("Green")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.green_pin));
+                    }else if(color.equals("Blue")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.blue_pin));
+                    }else if(color.equals("Yellow")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.yellow_pin));
+                    }else if(color.equals("Aqua")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.aqua_pin));
+                    }else if(color.equals("Magenta")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.magenta_pin));
+                    }
                 }else{
                     clickedMarkerItem.setVisited(true);
                     placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.visited_pin));
+                    String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(clickedMarkerItem.getCategory());
+                    if(color.equals("Red")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.red_visited_pin));
+                    }else if(color.equals("Green")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.green_visited_pin));
+                    }else if(color.equals("Blue")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.blue_visited_pin));
+                    }else if(color.equals("Yellow")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.yellow_visited_pin));
+                    }else if(color.equals("Aqua")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.aqua_visited_pin));
+                    }else if(color.equals("Magenta")){
+                        placeMarkers.get(clickedMarkerPosition).setIcon(BitmapDescriptorFactory
+                                .fromResource(R.drawable.magenta_visited_pin));
+                    }
                 }
                 break;
             case R.id.map_dialog_category_button:

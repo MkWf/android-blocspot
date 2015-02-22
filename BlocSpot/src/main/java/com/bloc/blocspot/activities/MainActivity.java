@@ -100,6 +100,19 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             intent.putIntegerArrayListExtra("data", deletions);
             startActivity(intent);
         }
+        if(item.getItemId() == R.id.main_action_filter){
+            AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
+            adapter.clear();
+            adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
+            categBuilder.setTitle("Filter By Category");
+            categBuilder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    BlocSpotApplication.getSharedDataSource().filterPointsByCategory(adapter.getItem(which));
+                    itemAdapter.notifyDataSetChanged();
+                }
+            });
+            categBuilder.show();
+        }
         return super.onOptionsItemSelected(item);
     }
 

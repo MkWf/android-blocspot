@@ -40,6 +40,7 @@ public class DataSource {
     private Location loc;
     private List<Place> places;
     private List<PointItem> items;
+    private List<PointItem> backupItems;
     private List<Category> categories;
     private List<String> colors = new ArrayList<String>();
     private DatabaseOpenHelper databaseOpenHelper;
@@ -79,14 +80,14 @@ public class DataSource {
         colors.add("Aqua");
         colors.add("Magenta");
 
+        backupItems = new ArrayList<>();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
                 if (BuildConfig.DEBUG && false) {
-                   // BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
+                    //BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
                 }
-
-
             }
         }).start();
     }
@@ -159,6 +160,7 @@ public class DataSource {
                         itemCursor.close();*/
                     }
                 }
+                backupItems.addAll(items);
 
                 if(!searchForCategory("All")) {
                     new CategoryTable.Builder()
@@ -197,6 +199,29 @@ public class DataSource {
     public List<Category> getCategories(){
         return categories;
     }
+
+    public void filterPointsByCategory(String category){
+        if(category.equals("All")){
+            items.removeAll(items);
+            items.addAll(backupItems);
+        }else{
+            items.removeAll(items);
+            items.addAll(backupItems);
+            List<PointItem> filter = new ArrayList<>();
+            for(int i = 0; i<items.size(); i++){
+                if(items.get(i).getCategory().equals(category)){
+                    filter.add(items.get(i));
+                }
+            }
+            items.removeAll(items);
+            items.addAll(filter);
+        }
+    }
+
+    public List<PointItem> getFilteredItems(){
+        return backupItems;
+    }
+
 
     public List<Category> fetchCategories() {
         final Cursor c = writableDatabase.rawQuery("SELECT * FROM categories", null);
