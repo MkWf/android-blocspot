@@ -149,7 +149,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
 
         placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
-            if (result.get(i) != null && !result.get(i).isVisited())  {
+            if (result.get(i) != null && !result.get(i).isVisited()){
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
@@ -158,6 +158,26 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pin))
                         .snippet(result.get(i).getVicinity())));
+                String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(result.get(i).getCategory());
+                if(color.equals("Red")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.red_pin));
+                }else if(color.equals("Green")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.green_pin));
+                }else if(color.equals("Blue")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.blue_pin));
+                }else if(color.equals("Yellow")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.yellow_pin));
+                }else if(color.equals("Aqua")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.aqua_pin));
+                }else if(color.equals("Magenta")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.magenta_pin));
+                }
             }else if(result.get(i) != null && result.get(i).isVisited()){
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
@@ -167,6 +187,26 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.visited_pin))
                         .snippet(result.get(i).getVicinity())));
+                String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(result.get(i).getCategory());
+                if(color.equals("Red")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.red_visited_pin));
+                }else if(color.equals("Green")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.green_visited_pin));
+                }else if(color.equals("Blue")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.blue_visited_pin));
+                }else if(color.equals("Yellow")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.yellow_visited_pin));
+                }else if(color.equals("Aqua")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.aqua_visited_pin));
+                }else if(color.equals("Magenta")){
+                    placeMarkers.get(i).setIcon(BitmapDescriptorFactory
+                            .fromResource(R.drawable.magenta_visited_pin));
+                }
             }
         }
       /*  if(deletions != null){
