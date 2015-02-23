@@ -35,6 +35,12 @@
             </intent-filter>
         </activity>
 
+        <receiver android:name="com.bloc.blocspot.receivers.PointReceiver">
+            <intent-filter>
+                <action android:name="com.bloc.blocspot.ACTION_RECEIVE_GEOFENCE"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

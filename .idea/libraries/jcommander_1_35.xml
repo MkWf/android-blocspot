@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jcommander-1.35">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/BlocSpot/libs/jcommander-1.35.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -2,6 +2,7 @@ package com.bloc.blocspot.activities;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,6 +29,12 @@ import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
+import com.bloc.blocspot.receivers.PointReceiver;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +44,9 @@ import java.util.List;
  */
 public class MainActivity extends ActionBarActivity implements ItemAdapter.Delegate,
         PopupMenu.OnMenuItemClickListener,
-        ItemAdapter.DataSource {
+        ItemAdapter.DataSource,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
 
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
@@ -50,12 +59,31 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private Toolbar toolbar;
     private ArrayList<Integer> deletions = new ArrayList<>();
     private String [] categories = {"restaurants", "bars", "stores"};
-    ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> adapter;
+    private GoogleApiClient client;
+    private PointReceiver p;
+    private PendingIntent pendingIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        /*Intent intent = new Intent(this, MapActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+        NotificationCompat.Builder noti = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.pin)
+                .setContentTitle("BlocSpot")
+                .setContentText("You're near a saved point")
+                .setContentIntent(pIntent);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification not = noti.build();
+        not.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(0, not);*/
+
+
 
         BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
             @Override
@@ -84,6 +112,50 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemAdapter);
+
+        client = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        client.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        client.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Intent i = new Intent(this, MapActivity.class);
+        pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Geofence.Builder geoFenceBuilder = new Geofence.Builder();
+        geoFenceBuilder.setCircularRegion(65.9667, -18.5, 100)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setLoiteringDelay(120000)
+                .setRequestId("1")
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL);
+        GeofencingRequest.Builder geoFenceReqBuilder = new GeofencingRequest.Builder();
+        geoFenceReqBuilder.addGeofence(geoFenceBuilder.build());
+        LocationServices.GeofencingApi.addGeofences(client, geoFenceReqBuilder.build(), pendingIntent);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     @Override
