@@ -223,8 +223,8 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         userPosition = mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
-                        new LatLng(BlocSpotApplication.getSharedDataSource().getUserPosition().getLatitude(),
-                                BlocSpotApplication.getSharedDataSource().getUserPosition().getLongitude()))
+                        new LatLng(BlocSpotApplication.getSharedDataSource().getLocation().getLatitude(),
+                                BlocSpotApplication.getSharedDataSource().getLocation().getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
     }
 

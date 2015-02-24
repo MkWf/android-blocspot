@@ -100,19 +100,49 @@ public class DataSource {
         return context;
     }
 
-    private void currentLocation() {
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+    public List<Place> getPlaces(){ return places; }
 
-        String provider = locationManager.getBestProvider(new Criteria(), false);
+    public List<Category> getCategories(){
+        return categories;
+    }
 
-        Location location = locationManager.getLastKnownLocation(provider);
+    public List<PointItem> getPoints(){ return items; }
 
-        if (location == null) {
-            locationManager.requestLocationUpdates(provider, 0, 0, listener);
-        } else {
-            loc = location;
+    public List<String> getCategoryColors(){ return colors; }
+
+    public List<String> getCategoryNames(){
+        List<String> names = new ArrayList<String>();
+        for(int i = 0; i<getCategories().size(); i++){
+            names.add(getCategories().get(i).getName());
         }
+        return names;
+    }
 
+    public String getCategoryColor(String category){
+        for(int i = 0; i<categories.size(); i++){
+            if(categories.get(i).getName().equals(category)){
+                return categories.get(i).getColor();
+            }
+        }
+        return "White";
+    }
+
+    public void filterPointsByCategory(String category){
+        if(category.equals("All")){
+            items.removeAll(items);
+            items.addAll(backupItems);
+        }else{
+            items.removeAll(items);
+            items.addAll(backupItems);
+            List<PointItem> filter = new ArrayList<>();
+            for(int i = 0; i<items.size(); i++){
+                if(items.get(i).getCategory().equals(category)){
+                    filter.add(items.get(i));
+                }
+            }
+            items.removeAll(items);
+            items.addAll(filter);
+        }
     }
 
     public void fetchPointItemPlaces(final Callback<List<PointItem>> callback) {
@@ -189,44 +219,6 @@ public class DataSource {
         });
     }
 
-    static PointItem itemFromCursor(Cursor cursor) {
-        return new PointItem(PointTable.getLocation(cursor), PointTable.getNote(cursor),
-                PointTable.getLatitude(cursor), PointTable.getLongitude(cursor),
-                PointTable.getVicinity(cursor), PointTable.getVisited(cursor),
-                PointTable.getCategory(cursor));
-    }
-
-    public List<Place> getPlaces(){
-        return places;
-    }
-
-    public List<Category> getCategories(){
-        return categories;
-    }
-
-    public void filterPointsByCategory(String category){
-        if(category.equals("All")){
-            items.removeAll(items);
-            items.addAll(backupItems);
-        }else{
-            items.removeAll(items);
-            items.addAll(backupItems);
-            List<PointItem> filter = new ArrayList<>();
-            for(int i = 0; i<items.size(); i++){
-                if(items.get(i).getCategory().equals(category)){
-                    filter.add(items.get(i));
-                }
-            }
-            items.removeAll(items);
-            items.addAll(filter);
-        }
-    }
-
-    public List<PointItem> getFilteredItems(){
-        return backupItems;
-    }
-
-
     public List<Category> fetchCategories() {
         final Cursor c = writableDatabase.rawQuery("SELECT * FROM categories", null);
         if(c.getCount() == 0){
@@ -242,27 +234,6 @@ public class DataSource {
         return list;
     }
 
-    public List<String> getCategoryNames(){
-        List<String> names = new ArrayList<String>();
-        for(int i = 0; i<getCategories().size(); i++){
-            names.add(getCategories().get(i).getName());
-        }
-        return names;
-    }
-
-    public String getCategoryColor(String category){
-        for(int i = 0; i<categories.size(); i++){
-            if(categories.get(i).getName().equals(category)){
-                return categories.get(i).getColor();
-            }
-        }
-        return "White";
-    }
-
-    public List<String> getCategoryColors(){
-        return colors;
-    }
-
     public boolean searchForCategory(String category){
         Cursor c = writableDatabase.query(categoryTable.getName(), null, "category_name = ?", new String[] {category}, null, null, null);
         if(c.getCount() == 0){
@@ -271,12 +242,30 @@ public class DataSource {
         return true;
     }
 
+    public boolean searchForCat(String category){
+        for(int i = 0; i<categories.size(); i++){
+            if(categories.get(i).getName().equals(category)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean searchForColor(String color){
         Cursor c = writableDatabase.query(categoryTable.getName(), null, "category_color = ?", new String[] {color}, null, null, null);
         if(c.getCount() == 0){
             return false;
         }
         return true;
+    }
+
+    public void insertPoint(PointItem item){
+        new PointTable.Builder()
+                .setLocation(item.getLocation())
+                .setLatitude(item.getLat())
+                .setLongitude(item.getLon())
+                .setVicinity(item.getVicinity())
+                .insert(writableDatabase);
     }
 
     public void insertCategory(String category, String color){
@@ -296,16 +285,12 @@ public class DataSource {
         writableDatabase.delete(categoryTable.getName(), "category_name = ?", new String[] {category});
     }
 
-    public void insertPoint(PointItem item){
-        new PointTable.Builder()
-                .setLocation(item.getLocation())
-                .setLatitude(item.getLat())
-                .setLongitude(item.getLon())
-                .setVicinity(item.getVicinity())
-                .insert(writableDatabase);
+    static PointItem itemFromCursor(Cursor cursor) {
+        return new PointItem(PointTable.getLocation(cursor), PointTable.getNote(cursor),
+                PointTable.getLatitude(cursor), PointTable.getLongitude(cursor),
+                PointTable.getVicinity(cursor), PointTable.getVisited(cursor),
+                PointTable.getCategory(cursor));
     }
-
-    public List<PointItem> getPoints(){ return items; }
 
     public double distBetweenGPSPointsInMiles(
             double lat1, double lng1, double lat2, double lng2) {
@@ -318,6 +303,20 @@ public class DataSource {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double d = r * c;
         return d;
+    }
+
+    private void currentLocation() {
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        String provider = locationManager.getBestProvider(new Criteria(), false);
+
+        Location location = locationManager.getLastKnownLocation(provider);
+
+        if (location == null) {
+            locationManager.requestLocationUpdates(provider, 0, 0, listener);
+        } else {
+            loc = location;
+        }
     }
 
     private LocationListener listener = new LocationListener() {
@@ -343,9 +342,5 @@ public class DataSource {
             locationManager.removeUpdates(listener);
         }
     };
-
-    public Location getUserPosition(){
-        return loc;
-    }
 }
 
