@@ -92,6 +92,10 @@ public class DataSource {
         }).start();
     }
 
+    public Location getLocation(){
+        return loc;
+    }
+
     public Context getContext(){
         return context;
     }

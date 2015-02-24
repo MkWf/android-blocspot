@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.bloc.blocspot.BlocSpotApplication;
@@ -162,7 +165,19 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
         this.actionbarMenu = menu;
+
+        SearchManager searchMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.main_action_search).getActionView();
+        String n = this.getPackageName();
+        //ComponentName c = new ComponentName("com.bloc.blocspot","YelpAPI");
+        //ComponentName c = new ComponentName("com.bloc.blocspot.blocspot","YelpAPI");
+        //ComponentName c = new ComponentName("com.bloc.blocspot.blocspot.activities","YelpAPI");
+        //ComponentName c = new ComponentName("com.bloc.blocspot.activities","YelpAPI");
+       // searchView.setSearchableInfo((searchMgr.getSearchableInfo(c)));
+        //searchView.setIconifiedByDefault(false);
+
         return super.onCreateOptionsMenu(menu);
+        //return true;
     }
 
     @Override
@@ -172,6 +187,9 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             intent.putIntegerArrayListExtra("data", deletions);
             startActivity(intent);
         }
+        //if(item.getItemId() == R.id.main_action_search){
+
+      //  }
         if(item.getItemId() == R.id.main_action_filter){
             AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
             adapter.clear();

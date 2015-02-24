@@ -1,12 +1,21 @@
-package com.bloc.blocspot.places.yelp;
+package com.bloc.blocspot.activities;
 
 /**
  * Created by Mark on 2/22/2015.
  */
 
 
+import android.app.ListActivity;
+import android.app.SearchManager;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.bloc.blocspot.BlocSpotApplication;
+import com.bloc.blocspot.blocspot.R;
+import com.bloc.blocspot.places.yelp.TwoStepOAuth;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -30,7 +39,7 @@ import org.scribe.oauth.OAuthService;
  * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
  *
  */
-public class YelpAPI {
+public class YelpAPI extends ListActivity {
 
     private static final String API_HOST = "api.yelp.com";
     private static final String DEFAULT_TERM = "dinner";
@@ -43,13 +52,33 @@ public class YelpAPI {
      * Update OAuth credentials below from the Yelp Developers API site:
      * http://www.yelp.com/developers/getting_started/api_access
      */
-    private static final String CONSUMER_KEY = "";
-    private static final String CONSUMER_SECRET = "";
-    private static final String TOKEN = "";
-    private static final String TOKEN_SECRET = "";
+    private static final String CONSUMER_KEY = "IStKxhkWSvHYwl0SjaySsw";
+    private static final String CONSUMER_SECRET = "tOGCifGgX6pUN5RvuHBkuGFTZ-M";
+    private static final String TOKEN = "AksabBDBODZMzTnMpIesbz1oQRu2R-Ru";
+    private static final String TOKEN_SECRET = "g8zVLrWpcGUbyLmmO3TPWMUoLvA";
 
     OAuthService service;
     Token accessToken;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.search);
+
+        YelpAPI yelpApi = new YelpAPI(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
+
+
+        service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
+                .apiSecret(CONSUMER_SECRET).build();
+        accessToken = new Token(TOKEN, TOKEN_SECRET);
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            yelpApi.searchForBusinessesByGeoLocation(query, BlocSpotApplication.getSharedDataSource().getLocation());
+        }
+
+    }
 
     /**
      * Setup the Yelp API OAuth credentials.
@@ -66,6 +95,10 @@ public class YelpAPI {
         this.accessToken = new Token(token, tokenSecret);
     }
 
+    public YelpAPI(){
+
+    }
+
     /**
      * Creates and sends a request to the Search API by term and location.
      * <p>
@@ -80,6 +113,14 @@ public class YelpAPI {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("location", location);
+        request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
+        return sendRequestAndGetResponse(request);
+    }
+
+    public String searchForBusinessesByGeoLocation(String term, Location location) {
+        OAuthRequest request = createOAuthRequest(SEARCH_PATH);
+        request.addQuerystringParameter("term", term);
+        request.addQuerystringParameter("ll", location.getLatitude() + "," + location.getLongitude());
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
         return sendRequestAndGetResponse(request);
     }
@@ -167,11 +208,6 @@ public class YelpAPI {
         public String location = DEFAULT_LOCATION;
     }
 
-    /**
-     * Main entry for sample Yelp API requests.
-     * <p>
-     * After entering your OAuth credentials, execute <tt><b>run.sh</b></tt> to run this example.
-     */
     public static void main(String[] args) {
         YelpAPICLI yelpApiCli = new YelpAPICLI();
         new JCommander(yelpApiCli, args);

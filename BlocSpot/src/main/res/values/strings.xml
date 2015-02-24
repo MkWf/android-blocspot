@@ -16,6 +16,7 @@
     <string name="choose_category">Choose Category</string>
     <string name="share_chooser_title">Share with...</string>
     <string name="save_point">Save Point</string>
+    <string name="search_places">Search places</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>
