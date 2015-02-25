@@ -158,9 +158,9 @@ public class DataSource {
                 if (places.size() == 0) {
                     return;
                 }
+
                 items = new ArrayList<PointItem>();
                 writableDatabase = databaseOpenHelper.getWritableDatabase();
-               //items = new ArrayList<PointItem>(places.size());
                 for (int i = 0; i < places.size(); i++) {
                     if (places.get(i) != null) {
                         items.add(new PointItem());
@@ -174,24 +174,6 @@ public class DataSource {
                         items.get(i).setLat(places.get(i).getLatitude());
                         items.get(i).setLon(places.get(i).getLongitude());
                         items.get(i).setVicinity(places.get(i).getVicinity());
-
-                        /*long pointItemId = new PointTable.Builder()
-                                .setLocation(places.get(i).getName())
-                                .setLatitude(places.get(i).getLatitude())
-                                .setLongitude(places.get(i).getLongitude())
-                                .setVicinity(places.get(i).getVicinity())
-                                .insert(writableDatabase);
-
-                        Cursor itemCursor = pointTable.fetchRow(databaseOpenHelper.getReadableDatabase(), pointItemId);
-                        itemCursor.moveToFirst();
-                        PointItem newPointItem = itemFromCursor(itemCursor);
-
-                        newPointItem.setDistance("< " + Integer.toString(dist) + " mi");
-                        newPointItem.setDistanceValue(dist);
-                        newPointItem.setNote("Add a note");
-
-                        items.add(newPointItem);
-                        itemCursor.close();*/
                     }
                 }
                 backupItems.addAll(items);
