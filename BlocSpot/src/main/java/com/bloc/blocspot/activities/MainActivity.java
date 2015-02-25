@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,7 +33,7 @@ import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
-import com.bloc.blocspot.receivers.PointReceiver;
+import com.bloc.blocspot.receivers.GeofenceReceiver;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
@@ -64,7 +65,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private String [] categories = {"restaurants", "bars", "stores"};
     private ArrayAdapter<String> adapter;
     private GoogleApiClient client;
-    private PointReceiver p;
+    private GeofenceReceiver p;
     private PendingIntent pendingIntent;
 
     @Override
@@ -137,13 +138,15 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onConnected(Bundle bundle) {
-        Intent i = new Intent(this, MapActivity.class);
-        pendingIntent = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent i = new Intent("com.bloc.blocspot.receivers.GeofenceReceiver.ACTION_RECEIVE_GEOFENCE");
+        pendingIntent = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        //Intent i = new Intent(this, GeofenceService.class);
+        //pendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Geofence.Builder geoFenceBuilder = new Geofence.Builder();
         geoFenceBuilder.setCircularRegion(65.9667, -18.5, 100)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(120000)
+                .setLoiteringDelay(0)
                 .setRequestId("1")
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL);
         GeofencingRequest.Builder geoFenceReqBuilder = new GeofencingRequest.Builder();
@@ -169,12 +172,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         SearchManager searchMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.main_action_search).getActionView();
         String n = this.getPackageName();
-        //ComponentName c = new ComponentName("com.bloc.blocspot","YelpAPI");
-        //ComponentName c = new ComponentName("com.bloc.blocspot.blocspot","YelpAPI");
-        //ComponentName c = new ComponentName("com.bloc.blocspot.blocspot.activities","YelpAPI");
-        //ComponentName c = new ComponentName("com.bloc.blocspot.activities","YelpAPI");
-       // searchView.setSearchableInfo((searchMgr.getSearchableInfo(c)));
-        //searchView.setIconifiedByDefault(false);
+        ComponentName c = new ComponentName("com.bloc.blocspot.blocspot","com.bloc.blocspot.activities.YelpAPI");
+
+        searchView.setSearchableInfo((searchMgr.getSearchableInfo(c)));
+        searchView.setIconifiedByDefault(false);
 
         return super.onCreateOptionsMenu(menu);
         //return true;
@@ -258,32 +259,55 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
                         newCateg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if(adapter.getCount() == 7){
-                                    Toast.makeText(getApplicationContext(), "Maximum number of categories reached. Remove a category first", Toast.LENGTH_LONG).show();
-                                }
-                                if(input.getText().toString().isEmpty()){
-                                    Toast.makeText(getApplicationContext(), "Category must have a name", Toast.LENGTH_LONG).show();
+                            public void onClick(final DialogInterface dialog, int which) {
+                                if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())){
+                                    Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
                                 }else{
-                                    if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())){
-                                        Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
-                                    }else{
-                                        for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
-                                            if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
-                                                continue;
-                                            }
-                                            else{
-                                                BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
-                                                //clickedItem.setCategory(input.getText().toString());
-                                                //itemAdapter.notifyDataSetChanged();
-                                                adapter.add(input.getText().toString());
-                                                adapter.notifyDataSetChanged();
-                                                break;
-                                            }
+                                    for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
+                                        if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
+                                            continue;
                                         }
-                                        dialog.dismiss();
+                                        else{
+                                            BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
+                                            //clickedItem.setCategory(input.getText().toString());
+                                            //itemAdapter.notifyDataSetChanged();
+                                            adapter.add(input.getText().toString());
+                                            adapter.notifyDataSetChanged();
+                                            break;
+                                        }
                                     }
+                                    dialog.dismiss();
                                 }
+
+                                /*BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString(), new DataSource.Callback<Boolean>() {
+                                    @Override
+                                    public void onSuccess(Boolean aBoolean) {
+                                        if(aBoolean){
+                                            Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
+                                        }
+                                        else{
+                                            for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
+                                                if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
+                                                    continue;
+                                                }
+                                                else{
+                                                    BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
+                                                    //clickedItem.setCategory(input.getText().toString());
+                                                    //itemAdapter.notifyDataSetChanged();
+                                                    adapter.add(input.getText().toString());
+                                                    adapter.notifyDataSetChanged();
+                                                    break;
+                                                }
+                                            }
+                                            dialog.dismiss();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+
+                                    }
+                                });*/
                             }
                         });
                         newCateg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

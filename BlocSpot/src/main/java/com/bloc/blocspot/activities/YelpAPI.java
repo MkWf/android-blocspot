@@ -10,6 +10,8 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ListAdapter;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -28,17 +30,6 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 
-/**
- * Code sample for accessing the Yelp API V2.
- *
- * This program demonstrates the capability of the Yelp API version 2.0 by using the Search API to
- * query for businesses by a search term and location, and the Business API to query additional
- * information about the top result from the search query.
- *
- * <p>
- * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
- *
- */
 public class YelpAPI extends ListActivity {
 
     private static final String API_HOST = "api.yelp.com";
@@ -48,37 +39,15 @@ public class YelpAPI extends ListActivity {
     private static final String SEARCH_PATH = "/v2/search";
     private static final String BUSINESS_PATH = "/v2/business";
 
-    /*
-     * Update OAuth credentials below from the Yelp Developers API site:
-     * http://www.yelp.com/developers/getting_started/api_access
-     */
     private static final String CONSUMER_KEY = "IStKxhkWSvHYwl0SjaySsw";
     private static final String CONSUMER_SECRET = "tOGCifGgX6pUN5RvuHBkuGFTZ-M";
     private static final String TOKEN = "AksabBDBODZMzTnMpIesbz1oQRu2R-Ru";
     private static final String TOKEN_SECRET = "g8zVLrWpcGUbyLmmO3TPWMUoLvA";
 
-    OAuthService service;
-    Token accessToken;
+    private OAuthService service;
+    private Token accessToken;
+    private ListAdapter adapter;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.search);
-
-        YelpAPI yelpApi = new YelpAPI(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
-
-
-        service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
-                .apiSecret(CONSUMER_SECRET).build();
-        accessToken = new Token(TOKEN, TOKEN_SECRET);
-
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            yelpApi.searchForBusinessesByGeoLocation(query, BlocSpotApplication.getSharedDataSource().getLocation());
-        }
-
-    }
 
     /**
      * Setup the Yelp API OAuth credentials.
@@ -122,6 +91,7 @@ public class YelpAPI extends ListActivity {
         request.addQuerystringParameter("term", term);
         request.addQuerystringParameter("ll", location.getLatitude() + "," + location.getLongitude());
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
+        Log.i(getClass().getSimpleName(), request.toString());
         return sendRequestAndGetResponse(request);
     }
 
@@ -214,5 +184,27 @@ public class YelpAPI extends ListActivity {
 
         YelpAPI yelpApi = new YelpAPI(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
         queryAPI(yelpApi, yelpApiCli);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_yelpapi);
+
+        YelpAPI yelpApi = new YelpAPI(CONSUMER_KEY, CONSUMER_SECRET, TOKEN, TOKEN_SECRET);
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            String result = yelpApi.searchForBusinessesByLocation(query, BlocSpotApplication.getSharedDataSource().getLocation().getLatitude() + "," + BlocSpotApplication.getSharedDataSource().getLocation().getLongitude());
+        }
+
+
+        //TextView title = (TextView) findViewById(R.id.yelp_title);
+        //TextView body = (TextView) findViewById(R.id.yelp_body);
+
+        //setListAdapter(adapter);
+
+
     }
 }

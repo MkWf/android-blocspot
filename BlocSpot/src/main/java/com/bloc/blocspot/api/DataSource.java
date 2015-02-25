@@ -131,6 +131,7 @@ public class DataSource {
         if(category.equals("All")){
             items.removeAll(items);
             items.addAll(backupItems);
+            Collections.sort(items, new PointItem());
         }else{
             items.removeAll(items);
             items.addAll(backupItems);
@@ -188,6 +189,27 @@ public class DataSource {
                 categories = new ArrayList<Category>();
                 categories.addAll(fetchCategories());
 
+                /*searchForCategory("All", new Callback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean aBoolean) {
+                        if(!aBoolean){
+                            new CategoryTable.Builder()
+                                    .setName("All")
+                                    .setColor("White")
+                                    .insert(writableDatabase);
+                        }
+                        categories = new ArrayList<Category>();
+                        categories.addAll(fetchCategories());
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+
+                    }
+                });*/
+
+
+
                 Collections.sort(items, new PointItem());
 
                 final List<PointItem> finalItems = items;
@@ -222,6 +244,28 @@ public class DataSource {
             return false;
         }
         return true;
+    }
+
+    public void searchForCategory(final String category, final Callback<Boolean> callback){
+        final Handler callbackThreadHandler = new Handler();
+        submitTask(new Runnable() {
+            @Override
+            public void run() {
+                final boolean b;
+                Cursor c = writableDatabase.query(categoryTable.getName(), null, "category_name = ?", new String[]{category}, null, null, null);
+                if (c.getCount() == 0) {
+                    b = false;
+                }else{
+                    b = true;
+                }
+                callbackThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(b);
+                    }
+                });
+            }
+        });
     }
 
     public boolean searchForCat(String category){
