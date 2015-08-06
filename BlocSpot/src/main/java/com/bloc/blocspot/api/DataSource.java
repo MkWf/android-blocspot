@@ -64,6 +64,9 @@ public class DataSource {
         this.context = context;
         executorService = Executors.newSingleThreadExecutor();
 
+        //loc.setLatitude(40.54992600000001);
+        //loc.setLongitude(-74.20030700000001);
+
         categoryTable = new CategoryTable();
         pointTable = new PointTable();
 
@@ -119,12 +122,15 @@ public class DataSource {
     }
 
     public String getCategoryColor(String category){
-        for(int i = 0; i<categories.size(); i++){
-            if(categories.get(i).getName().equals(category)){
-                return categories.get(i).getColor();
+        if(categories != null){
+            for(int i = 0; i<categories.size(); i++){
+                if(categories.get(i).getName().equals(category)){
+                    return categories.get(i).getColor();
+                }
             }
+            return "White";
         }
-        return "White";
+        return "";
     }
 
     public void filterPointsByCategory(String category){
@@ -151,11 +157,9 @@ public class DataSource {
         submitTask(new Runnable() {
             @Override
             public void run() {
-                currentLocation();
-                PlacesService service = new PlacesService(
-                        "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
-                places = service.findPlaces(loc.getLatitude(), // 28.632808
-                        loc.getLongitude());
+                //currentLocation();
+                PlacesService service = new PlacesService("AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
+                places = service.findPlaces(40.54992600000001, -74.20030700000001);
                 if (places.size() == 0) {
                     return;
                 }
@@ -166,8 +170,9 @@ public class DataSource {
                     if (places.get(i) != null) {
                         items.add(new PointItem());
                         items.get(i).setLocation(places.get(i).getName());
-
-                        double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
+                        //loc.setLatitude(40.54992600000001);
+                        //loc.setLongitude(-74.20030700000001);
+                        double pointDistance = distBetweenGPSPointsInMiles(40.54992600000001, -74.20030700000001, places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
                         items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
@@ -318,8 +323,7 @@ public class DataSource {
                 PointTable.getCategory(cursor));
     }
 
-    public double distBetweenGPSPointsInMiles(
-            double lat1, double lng1, double lat2, double lng2) {
+    public double distBetweenGPSPointsInMiles(double lat1, double lng1, double lat2, double lng2) {
         int r = 3963;
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lng2 - lng1);
