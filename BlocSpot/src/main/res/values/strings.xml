@@ -17,6 +17,13 @@
     <string name="share_chooser_title">Share with...</string>
     <string name="save_point">Save Point</string>
     <string name="search_places">Search places</string>
+    <string name="categ_white">Whire</string>
+    <string name="categ_red">Red places</string>
+    <string name="categ_green">Green places</string>
+    <string name="categ_blue">Blue</string>
+    <string name="categ_yellow">Yellow</string>
+    <string name="categ_aqua">Aqua</string>
+    <string name="categ_magenta">Magenta</string>
     <string-array name="places">
         <item >ATM</item>
         <item >Bank</item>

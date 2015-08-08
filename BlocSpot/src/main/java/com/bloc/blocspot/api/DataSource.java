@@ -18,6 +18,7 @@ import com.bloc.blocspot.api.model.database.DatabaseOpenHelper;
 import com.bloc.blocspot.api.model.database.table.CategoryTable;
 import com.bloc.blocspot.api.model.database.table.PointTable;
 import com.bloc.blocspot.blocspot.BuildConfig;
+import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.places.Place;
 import com.bloc.blocspot.places.PlacesService;
 
@@ -40,9 +41,9 @@ public class DataSource {
     private Location loc;
     private List<Place> places;
     private List<PointItem> items;
-    private List<PointItem> backupItems;
+    private List<PointItem> backupItems = new ArrayList<>();
     private List<Category> categories;
-    private List<String> colors = new ArrayList<String>();
+    private List<String> colors = new ArrayList<>();
     private DatabaseOpenHelper databaseOpenHelper;
     private CategoryTable categoryTable;
     private PointTable pointTable;
@@ -64,26 +65,19 @@ public class DataSource {
         this.context = context;
         executorService = Executors.newSingleThreadExecutor();
 
-        //loc.setLatitude(40.54992600000001);
-        //loc.setLongitude(-74.20030700000001);
-
+        //Initialize tables and database
         categoryTable = new CategoryTable();
         pointTable = new PointTable();
+        databaseOpenHelper = new DatabaseOpenHelper(BlocSpotApplication.getSharedInstance(), categoryTable, pointTable);
 
-        databaseOpenHelper = new DatabaseOpenHelper(BlocSpotApplication.getSharedInstance(),
-                categoryTable, pointTable);
-
-        colors = new ArrayList<String>();
-
-        colors.add("White");
-        colors.add("Red");
-        colors.add("Green");
-        colors.add("Blue");
-        colors.add("Yellow");
-        colors.add("Aqua");
-        colors.add("Magenta");
-
-        backupItems = new ArrayList<>();
+        //Initialize category colors for POIs
+        colors.add(context.getResources().getString(R.string.categ_white));
+        colors.add(context.getResources().getString(R.string.categ_red));
+        colors.add(context.getResources().getString(R.string.categ_green));
+        colors.add(context.getResources().getString(R.string.categ_blue));
+        colors.add(context.getResources().getString(R.string.categ_yellow));
+        colors.add(context.getResources().getString(R.string.categ_aqua));
+        colors.add(context.getResources().getString(R.string.categ_magenta));
 
         new Thread(new Runnable() {
             @Override
@@ -95,22 +89,11 @@ public class DataSource {
         }).start();
     }
 
-    public Location getLocation(){
-        return loc;
-    }
-
-    public Context getContext(){
-        return context;
-    }
-
+    public Location getLocation(){ return loc; }
+    public Context getContext(){ return context;}
     public List<Place> getPlaces(){ return places; }
-
-    public List<Category> getCategories(){
-        return categories;
-    }
-
+    public List<Category> getCategories(){ return categories; }
     public List<PointItem> getPoints(){ return items; }
-
     public List<String> getCategoryColors(){ return colors; }
 
     public List<String> getCategoryNames(){
