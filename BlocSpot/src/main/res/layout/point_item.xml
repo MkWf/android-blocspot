@@ -76,6 +76,9 @@
         android:layout_below="@id/point_item_location"
         android:layout_alignLeft="@id/point_item_location"
         android:layout_alignBottom="@id/point_item_distance"
+        android:layout_toLeftOf="@id/point_item_popup_menu"
+        android:lines="1"
+        android:ellipsize="end"
         android:layout_above="@id/point_item_horizontal_line"/>
 
 </RelativeLayout>
