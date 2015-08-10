@@ -170,7 +170,7 @@ public class DataSource {
                 if(!searchForCategory("All")) {
                     new CategoryTable.Builder()
                             .setName("All")
-                            .setColor("White")
+                            .setColor(context.getResources().getString(R.string.categ_white))
                             .insert(writableDatabase);
                 }
 
