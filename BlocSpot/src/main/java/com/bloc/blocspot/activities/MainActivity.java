@@ -183,26 +183,30 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.main_action_map) {
-            Intent intent = new Intent(MainActivity.this, MapActivity.class);
-            intent.putIntegerArrayListExtra("data", deletions);
-            startActivity(intent);
-        }
-        //if(item.getItemId() == R.id.main_action_search){
+        switch(item.getItemId()){
+            case R.id.main_action_map:
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                //If user deletes POIs from the list, that data needs to be passed to the map to update its markers
+                intent.putIntegerArrayListExtra("data", deletions);
+                startActivity(intent);
+                break;
+            case R.id.main_action_filter:
+                AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
+                adapter.clear();
+                adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
+                categBuilder.setTitle("Filter By Category");
+                categBuilder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        BlocSpotApplication.getSharedDataSource().filterPointsByCategory(adapter.getItem(which));
+                        itemAdapter.notifyDataSetChanged();
+                    }
+                });
+                categBuilder.show();
+            case R.id.main_action_search:
+                break;
+            default:
+                break;
 
-      //  }
-        if(item.getItemId() == R.id.main_action_filter){
-            AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
-            adapter.clear();
-            adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
-            categBuilder.setTitle("Filter By Category");
-            categBuilder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    BlocSpotApplication.getSharedDataSource().filterPointsByCategory(adapter.getItem(which));
-                    itemAdapter.notifyDataSetChanged();
-                }
-            });
-            categBuilder.show();
         }
         return super.onOptionsItemSelected(item);
     }
