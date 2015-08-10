@@ -30,31 +30,12 @@
         android:background="@color/white"/>
 
     <TextView
-        style="@style/Title"
-        android:id="@+id/point_item_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_toRightOf="@id/point_item_checkbox"
-        android:layout_marginBottom="5dp"/>
-
-    <TextView
         style="@style/Distance"
         android:id="@+id/point_item_distance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/point_item_checkbox"
         android:layout_below="@id/point_item_checkbox"/>
-
-    <TextView
-        style="@style/Note"
-        android:id="@+id/point_item_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/point_item_location"
-        android:layout_alignLeft="@id/point_item_location"
-        android:layout_alignBottom="@id/point_item_distance"/>
 
     <ImageButton
         android:id="@+id/point_item_popup_menu"
@@ -66,6 +47,19 @@
         android:src="@drawable/ic_action_overflow"
         />
 
+    <TextView
+        style="@style/Title"
+        android:id="@+id/point_item_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/point_item_checkbox"
+        android:layout_toLeftOf="@id/point_item_popup_menu"
+        android:lines="1"
+        android:ellipsize="end"
+        android:layout_marginBottom="5dp"/>
+
     <View
         android:id="@+id/point_item_horizontal_line"
         android:layout_width="fill_parent"
@@ -73,4 +67,15 @@
         android:layout_below="@id/point_item_distance"
         android:layout_marginTop="8dp"
         android:background="@android:color/darker_gray"/>
+
+    <TextView
+        style="@style/Note"
+        android:id="@+id/point_item_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/point_item_location"
+        android:layout_alignLeft="@id/point_item_location"
+        android:layout_alignBottom="@id/point_item_distance"
+        android:layout_above="@id/point_item_horizontal_line"/>
+
 </RelativeLayout>
