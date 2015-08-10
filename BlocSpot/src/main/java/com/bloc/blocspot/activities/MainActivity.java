@@ -217,6 +217,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             visitedBox.setChecked(false);
             item.setVisited(false);
         }else{
+            Toast.makeText(this, "Marked as visited", Toast.LENGTH_SHORT).show();
             visitedBox.setChecked(true);
             item.setVisited(true);
         }
