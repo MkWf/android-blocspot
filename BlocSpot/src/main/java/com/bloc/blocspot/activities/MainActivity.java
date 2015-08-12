@@ -253,36 +253,41 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 ImageButton add = (ImageButton) dialogView.findViewById(R.id.category_dialog_add_button);
                 ImageButton minus = (ImageButton) dialogView.findViewById(R.id.category_dialog_minus_button);
                 add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        AlertDialog.Builder newCateg = new AlertDialog.Builder(MainActivity.this);
-                        newCateg.setTitle("Add a new category");
+                   @Override
+                   public void onClick(View v) {
+                       if (BlocSpotApplication.getSharedDataSource().getCategories().size() == DataSource.MAX_CATEGORIES) {
+                           Toast.makeText(BlocSpotApplication.getSharedInstance(), "Maximum number of categories reached", Toast.LENGTH_SHORT).show();
+                       } else {
+                           AlertDialog.Builder newCateg = new AlertDialog.Builder(MainActivity.this);
+                           newCateg.setTitle("Add a new category");
 
-                        final EditText input = new EditText(MainActivity.this);
-                        input.setInputType(InputType.TYPE_CLASS_TEXT);
-                        newCateg.setView(input);
+                           final EditText input = new EditText(MainActivity.this);
+                           input.setInputType(InputType.TYPE_CLASS_TEXT);
+                           newCateg.setView(input);
 
-                        newCateg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(final DialogInterface dialog, int which) {
-                                if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())){
-                                    Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
-                                }else{
-                                    for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
-                                        if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
-                                            continue;
-                                        }
-                                        else{
-                                            BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
-                                            //clickedItem.setCategory(input.getText().toString());
-                                            //itemAdapter.notifyDataSetChanged();
-                                            adapter.add(input.getText().toString());
-                                            adapter.notifyDataSetChanged();
-                                            break;
-                                        }
-                                    }
-                                    dialog.dismiss();
-                                }
+                           newCateg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(final DialogInterface dialog, int which) {
+                                   if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())) {
+                                       Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
+                                   }else if(input.getText().toString().isEmpty()){
+                                       Toast.makeText(getApplicationContext(), "Enter a name for the category", Toast.LENGTH_LONG).show();
+                                   }else{
+                                       for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
+                                           if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
+                                               continue;
+                                           }
+                                           else{
+                                               BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
+                                               //clickedItem.setCategory(input.getText().toString());
+                                               //itemAdapter.notifyDataSetChanged();
+                                               adapter.add(input.getText().toString());
+                                               adapter.notifyDataSetChanged();
+                                               break;
+                                           }
+                                       }
+                                       dialog.dismiss();
+                                   }
 
                                 /*BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString(), new DataSource.Callback<Boolean>() {
                                     @Override
@@ -313,17 +318,19 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
                                     }
                                 });*/
-                            }
-                        });
-                        newCateg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        newCateg.show();
-                    }
-                });
+                               }
+                           });
+                           newCateg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                               @Override
+                               public void onClick(DialogInterface dialog, int which) {
+                                   dialog.cancel();
+                               }
+                           });
+                           newCateg.show();
+                       }
+                   }
+               });
+
                 minus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

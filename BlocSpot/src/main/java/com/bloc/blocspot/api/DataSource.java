@@ -48,6 +48,7 @@ public class DataSource {
     private CategoryTable categoryTable;
     private PointTable pointTable;
     SQLiteDatabase writableDatabase;
+    public static int MAX_CATEGORIES = 7;
 
     public static interface Callback<Result> {
         public void onSuccess(Result result);
