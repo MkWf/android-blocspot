@@ -3,25 +3,14 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        style="@style/Title"
-        android:id="@+id/category_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/choose_category"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center"/>
-
     <ImageButton
         android:id="@+id/category_dialog_add_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="8dp"
-        android:layout_toRightOf="@id/category_title"
         android:src="@drawable/category_add"
+        android:background="@color/green"
         android:layout_gravity="center"/>
 
     <ImageButton
@@ -30,7 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="50dp"
         android:src="@drawable/category_minus"
+        android:background="@color/red"
         android:layout_gravity="center"/>
 
 </RelativeLayout>
