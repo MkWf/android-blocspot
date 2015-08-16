@@ -181,6 +181,25 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         ImageButton share = (ImageButton) dialogView.findViewById(R.id.map_dialog_share);
         ImageButton delete = (ImageButton) dialogView.findViewById(R.id.map_dialog_delete);
 
+        category.setText(clickedMarkerItem.getCategory());
+        String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(clickedMarkerItem.getCategory());
+
+        if(color.equals(getResources().getString(R.string.categ_white))){
+            category.setTextColor(getResources().getColor(R.color.white));
+        }else  if(color.equals(getResources().getString(R.string.categ_red))){
+            category.setTextColor(getResources().getColor(R.color.red));
+        }else  if(color.equals(getResources().getString(R.string.categ_green))){
+            category.setTextColor(getResources().getColor(R.color.green));
+        }else  if(color.equals(getResources().getString(R.string.categ_blue))){
+            category.setTextColor(getResources().getColor(R.color.blue));
+        }else if(color.equals(getResources().getString(R.string.categ_yellow))){
+            category.setTextColor(getResources().getColor(R.color.yellow));
+        }else if(color.equals(getResources().getString(R.string.categ_aqua))){
+            category.setTextColor(getResources().getColor(R.color.aqua));
+        }else  if(color.equals(getResources().getString(R.string.categ_magenta))){
+            category.setTextColor(getResources().getColor(R.color.magenta));
+        }
+
         location.setText(clickedMarkerItem.getLocation());
         note.setText(clickedMarkerItem.getNote());
 
