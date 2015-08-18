@@ -494,11 +494,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     public void onLocationChanged(Location location) {
         BlocSpotApplication.getSharedDataSource().setLocation(location);
 
-        BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+        BlocSpotApplication.getSharedDataSource().fetchUpdatedPlaces(new DataSource.Callback<List<PointItem>>() {
             @Override
             public void onSuccess(List<PointItem> pointItems) {
                 if (!pointItems.isEmpty()) {
-                    //items.addAll(0, pointItems);
                     itemAdapter.notifyItemRangeInserted(0, pointItems.size());
                 }
             }

@@ -47,6 +47,7 @@ public class DataSource {
     private DatabaseOpenHelper databaseOpenHelper;
     private CategoryTable categoryTable;
     private PointTable pointTable;
+    private PlacesService service;
     SQLiteDatabase writableDatabase;
     public static int MAX_CATEGORIES = 7;
 
@@ -142,7 +143,7 @@ public class DataSource {
             @Override
             public void run() {
                 //currentLocation();
-                PlacesService service = new PlacesService("AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
+                service = new PlacesService("AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
                 //places = service.findPlaces(40.54992600000001, -74.20030700000001);
                 places = service.findPlaces(loc.getLatitude(), loc.getLongitude());
                 if (places.size() == 0) {
@@ -155,8 +156,6 @@ public class DataSource {
                     if (places.get(i) != null) {
                         items.add(new PointItem());
                         items.get(i).setLocation(places.get(i).getName());
-                        //loc.setLatitude(40.54992600000001);
-                        //loc.setLongitude(-74.20030700000001);
                         double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
@@ -179,26 +178,48 @@ public class DataSource {
                 categories = new ArrayList<Category>();
                 categories.addAll(fetchCategories());
 
-                /*searchForCategory("All", new Callback<Boolean>() {
+                Collections.sort(items, new PointItem());
+
+                final List<PointItem> finalItems = items;
+                callbackThreadHandler.post(new Runnable() {
                     @Override
-                    public void onSuccess(Boolean aBoolean) {
-                        if(!aBoolean){
-                            new CategoryTable.Builder()
-                                    .setName("All")
-                                    .setColor("White")
-                                    .insert(writableDatabase);
-                        }
-                        categories = new ArrayList<Category>();
-                        categories.addAll(fetchCategories());
+                    public void run() {
+                        callback.onSuccess(finalItems);
                     }
+                });
+            }
+        });
+    }
 
-                    @Override
-                    public void onError(String errorMessage) {
+    public void fetchUpdatedPlaces(final Callback<List<PointItem>> callback) {
+        final Handler callbackThreadHandler = new Handler();
+        submitTask(new Runnable() {
+            @Override
+            public void run() {
+                places = service.findPlaces(loc.getLatitude(), loc.getLongitude());
 
+                items.clear();
+                if (places.size() == 0) {
+                    return;
+                }
+
+                for (int i = 0; i < places.size(); i++) {
+                    if (places.get(i) != null) {
+                        items.add(new PointItem());
+                        items.get(i).setLocation(places.get(i).getName());
+                        double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
+                        int dist = (int) pointDistance + 1;
+
+                        items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
+                        items.get(i).setDistanceValue(dist);
+                        items.get(i).setLat(places.get(i).getLatitude());
+                        items.get(i).setLon(places.get(i).getLongitude());
+                        items.get(i).setVicinity(places.get(i).getVicinity());
                     }
-                });*/
+                }
 
-
+                backupItems.clear();
+                backupItems.addAll(items);
 
                 Collections.sort(items, new PointItem());
 
