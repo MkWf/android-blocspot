@@ -9,6 +9,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -36,8 +38,8 @@ import com.bloc.blocspot.blocspot.R;
 import com.bloc.blocspot.receivers.GeofenceReceiver;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
@@ -50,7 +52,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         PopupMenu.OnMenuItemClickListener,
         ItemAdapter.DataSource,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener{
+
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     private Menu actionbarMenu;
     private ItemAdapter itemAdapter;
@@ -64,9 +69,10 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private ArrayList<Integer> deletions = new ArrayList<>();
     private String [] categories = {"restaurants", "bars", "stores"};
     private ArrayAdapter<String> adapter;
-    private GoogleApiClient client;
     private GeofenceReceiver p;
     private PendingIntent pendingIntent;
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,22 +93,6 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
         notificationManager.notify(0, not);*/
 
-
-
-        BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
-            @Override
-            public void onSuccess(List<PointItem> pointItems) {
-                if (!pointItems.isEmpty()) {
-                    //items.addAll(0, pointItems);
-                    itemAdapter.notifyItemRangeInserted(0, pointItems.size());
-                }
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-            }
-        });
-
         adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
@@ -117,28 +107,39 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(itemAdapter);
 
-        client = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
+        mLocationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
+                .setFastestInterval(1000); // 1 second, in milliseconds
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
                 .build();
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        client.connect();
+    protected void onResume() {
+        super.onResume();
+        if(itemAdapter != null){
+            itemAdapter.notifyDataSetChanged();
+        }
+        mGoogleApiClient.connect();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        client.disconnect();
+    protected void onPause() {
+        super.onPause();
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        Intent i = new Intent("com.bloc.blocspot.receivers.GeofenceReceiver.ACTION_RECEIVE_GEOFENCE");
+       /* Intent i = new Intent("com.bloc.blocspot.receivers.GeofenceReceiver.ACTION_RECEIVE_GEOFENCE");
         pendingIntent = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         //Intent i = new Intent(this, GeofenceService.class);
         //pendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -151,7 +152,28 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL);
         GeofencingRequest.Builder geoFenceReqBuilder = new GeofencingRequest.Builder();
         geoFenceReqBuilder.addGeofence(geoFenceBuilder.build());
-        LocationServices.GeofencingApi.addGeofences(client, geoFenceReqBuilder.build(), pendingIntent);
+        LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoFenceReqBuilder.build(), pendingIntent);*/
+
+        Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if(location == null){
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }else{
+            BlocSpotApplication.getSharedDataSource().setLocation(location);
+
+            BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+                @Override
+                public void onSuccess(List<PointItem> pointItems) {
+                    if (!pointItems.isEmpty()) {
+                        //items.addAll(0, pointItems);
+                        itemAdapter.notifyItemRangeInserted(0, pointItems.size());
+                    }
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                }
+            });
+        }
     }
 
     @Override
@@ -161,7 +183,13 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
+            } catch (IntentSender.SendIntentException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -462,8 +490,21 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         return 0;
     }
 
-    @Override protected void onResume () {
-        super.onResume();
-        itemAdapter.notifyDataSetChanged();
+    @Override
+    public void onLocationChanged(Location location) {
+        BlocSpotApplication.getSharedDataSource().setLocation(location);
+
+        BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+            @Override
+            public void onSuccess(List<PointItem> pointItems) {
+                if (!pointItems.isEmpty()) {
+                    //items.addAll(0, pointItems);
+                    itemAdapter.notifyItemRangeInserted(0, pointItems.size());
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {}
+        });
     }
 }

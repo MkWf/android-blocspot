@@ -143,7 +143,8 @@ public class DataSource {
             public void run() {
                 //currentLocation();
                 PlacesService service = new PlacesService("AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0");
-                places = service.findPlaces(40.54992600000001, -74.20030700000001);
+                //places = service.findPlaces(40.54992600000001, -74.20030700000001);
+                places = service.findPlaces(loc.getLatitude(), loc.getLongitude());
                 if (places.size() == 0) {
                     return;
                 }
@@ -156,7 +157,7 @@ public class DataSource {
                         items.get(i).setLocation(places.get(i).getName());
                         //loc.setLatitude(40.54992600000001);
                         //loc.setLongitude(-74.20030700000001);
-                        double pointDistance = distBetweenGPSPointsInMiles(40.54992600000001, -74.20030700000001, places.get(i).getLatitude(), places.get(i).getLongitude());
+                        double pointDistance = distBetweenGPSPointsInMiles(loc.getLatitude(), loc.getLongitude(), places.get(i).getLatitude(), places.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
                         items.get(i).setDistance("< " + Integer.toString(dist) + " mi");
@@ -273,6 +274,8 @@ public class DataSource {
         }
         return true;
     }
+
+    public void setLocation(Location location){ loc = location; }
 
     public void insertPoint(PointItem item){
         new PointTable.Builder()
