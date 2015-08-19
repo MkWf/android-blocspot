@@ -2,7 +2,6 @@ package com.bloc.blocspot.activities;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,14 +30,12 @@ import com.bloc.blocspot.adapters.ItemAdapter;
 import com.bloc.blocspot.api.DataSource;
 import com.bloc.blocspot.api.model.PointItem;
 import com.bloc.blocspot.blocspot.R;
-import com.bloc.blocspot.receivers.GeofenceReceiver;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,20 +50,14 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    private Menu actionbarMenu;
-    private ItemAdapter itemAdapter;
-    private List<PointItem> items = new ArrayList<PointItem>();
-    private ProgressDialog dialog;
-    private PointItem clickedItem;
-    int clickedItemPosition;
-    private View noteView;
-    private RecyclerView recyclerView;
-    private Toolbar toolbar;
-    private ArrayList<Integer> deletions = new ArrayList<>();
-    private String [] categories = {"restaurants", "bars", "stores"};
-    private ArrayAdapter<String> adapter;
-    private GeofenceReceiver p;
-    private PendingIntent pendingIntent;
+    private Menu mToolbarMenu;
+    private ItemAdapter mItemAdapter;
+    private ProgressDialog mPdDialog;
+    private PointItem mClickedItem;
+    private int mClickedItemPosition;
+    private RecyclerView mRecyclerView;
+    private Toolbar mToolbar;
+    private ArrayAdapter<String> mCategoryAdapter;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
@@ -75,38 +66,24 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*Intent intent = new Intent(this, MapActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        mCategoryAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
 
-        NotificationCompat.Builder noti = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.pin)
-                .setContentTitle("BlocSpot")
-                .setContentText("You're near a saved point")
-                .setContentIntent(pIntent);
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification not = noti.build();
-        not.flags |= Notification.FLAG_AUTO_CANCEL;
+        mToolbar = (Toolbar) findViewById(R.id.tb_activity_main);
+        setSupportActionBar(mToolbar);
 
-        notificationManager.notify(0, not);*/
+        mItemAdapter = new ItemAdapter();
+        mItemAdapter.setDelegate(this);
+        mItemAdapter.setDataSource(this);
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
-
-        toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
-        setSupportActionBar(toolbar);
-
-        itemAdapter = new ItemAdapter();
-        itemAdapter.setDelegate(this);
-        itemAdapter.setDataSource(this);
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(itemAdapter);
+        mRecyclerView = (RecyclerView) findViewById(R.id.rv_activity_main);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mItemAdapter);
 
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(10 * 1000)        // 10 seconds, in milliseconds
-                .setFastestInterval(1000); // 1 second, in milliseconds
+                .setInterval(10 * 1000)
+                .setFastestInterval(1000);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -118,8 +95,8 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     protected void onResume() {
         super.onResume();
-        if(itemAdapter != null){
-            itemAdapter.notifyDataSetChanged();
+        if(mItemAdapter != null){
+            mItemAdapter.notifyDataSetChanged();
         }
         mGoogleApiClient.connect();
     }
@@ -135,34 +112,17 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onConnected(Bundle bundle) {
-       /* Intent i = new Intent("com.bloc.blocspot.receivers.GeofenceReceiver.ACTION_RECEIVE_GEOFENCE");
-        pendingIntent = PendingIntent.getBroadcast(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        //Intent i = new Intent(this, GeofenceService.class);
-        //pendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Geofence.Builder geoFenceBuilder = new Geofence.Builder();
-        geoFenceBuilder.setCircularRegion(65.9667, -18.5, 100)
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(0)
-                .setRequestId("1")
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL);
-        GeofencingRequest.Builder geoFenceReqBuilder = new GeofencingRequest.Builder();
-        geoFenceReqBuilder.addGeofence(geoFenceBuilder.build());
-        LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, geoFenceReqBuilder.build(), pendingIntent);*/
-
         Location location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(location == null){
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }else{
             BlocSpotApplication.getSharedDataSource().setLocation(location);
-            //Should only run when the app first launches and not when returning from a paused/stopped state
             if(BlocSpotApplication.getSharedDataSource().getPoints().isEmpty()){
                 BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
                     @Override
                     public void onSuccess(List<PointItem> pointItems) {
                         if (!pointItems.isEmpty()) {
-                            //items.addAll(0, pointItems);
-                            itemAdapter.notifyDataSetChanged();
+                            mItemAdapter.notifyDataSetChanged();
                         }
                     }
 
@@ -176,7 +136,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        //Do nothing
     }
 
     @Override
@@ -193,18 +153,9 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
-        this.actionbarMenu = menu;
-
-        /*SearchManager searchMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.main_action_search).getActionView();
-        String n = this.getPackageName();
-        ComponentName c = new ComponentName("com.bloc.blocspot.blocspot","com.bloc.blocspot.activities.YelpAPI");
-
-        searchView.setSearchableInfo((searchMgr.getSearchableInfo(c)));
-        searchView.setIconifiedByDefault(false);*/
+        this.mToolbarMenu = menu;
 
         return super.onCreateOptionsMenu(menu);
-        //return true;
     }
 
     @Override
@@ -212,19 +163,17 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         switch(item.getItemId()){
             case R.id.main_action_map:
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                //If user deletes POIs from the list, that data needs to be passed to the map to update its markers
-                intent.putIntegerArrayListExtra("data", deletions);
                 startActivity(intent);
                 break;
             case R.id.main_action_filter:
                 AlertDialog.Builder categBuilder = new AlertDialog.Builder(this);
-                adapter.clear();
-                adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
-                categBuilder.setTitle("Filter By Category");
-                categBuilder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
+                mCategoryAdapter.clear();
+                mCategoryAdapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
+                categBuilder.setTitle(getString(R.string.filter_by_category));
+                categBuilder.setSingleChoiceItems(mCategoryAdapter, 0, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        BlocSpotApplication.getSharedDataSource().filterPointsByCategory(adapter.getItem(which));
-                        itemAdapter.notifyDataSetChanged();
+                        BlocSpotApplication.getSharedDataSource().filterPointsByCategory(mCategoryAdapter.getItem(which));
+                        mItemAdapter.notifyDataSetChanged();
                     }
                 });
                 categBuilder.show();
@@ -233,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                     @Override
                     public void onSuccess(List<PointItem> pointItems) {
                         if (!pointItems.isEmpty()) {
-                            itemAdapter.notifyDataSetChanged();
+                            mItemAdapter.notifyDataSetChanged();
                         }
                     }
 
@@ -254,7 +203,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             visitedBox.setChecked(false);
             item.setVisited(false);
         }else{
-            Toast.makeText(this, "Marked as visited", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.marked_as_visited), Toast.LENGTH_SHORT).show();
             visitedBox.setChecked(true);
             item.setVisited(true);
         }
@@ -262,10 +211,8 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     @Override
     public void onPopupMenuClicked(ItemAdapter itemAdapter, View view, PointItem item){
-        clickedItemPosition = BlocSpotApplication.getSharedDataSource().getPoints().indexOf(item);
-        clickedItem = item;
-        //View point = recyclerView.getLayoutManager().findViewByPosition(clickedItemPosition);
-        //noteView = point;
+        mClickedItemPosition = BlocSpotApplication.getSharedDataSource().getPoints().indexOf(item);
+        mClickedItem = item;
 
         PopupMenu popMenu = new PopupMenu(this, view);
         getMenuInflater().inflate(R.menu.popup_menu, popMenu.getMenu());
@@ -278,7 +225,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         switch (item.getItemId()) {
             case R.id.popup_navigate :
                 Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                intent.putExtra("navigate", clickedItemPosition);
+                intent.putExtra(getString(R.string.navigate), mClickedItemPosition);
                 startActivity(intent);
                 break;
             case R.id.popup_choose_category :
@@ -293,22 +240,22 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                    @Override
                    public void onClick(View v) {
                        if (BlocSpotApplication.getSharedDataSource().getCategories().size() == DataSource.MAX_CATEGORIES) {
-                           Toast.makeText(BlocSpotApplication.getSharedInstance(), "Maximum number of categories reached", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(BlocSpotApplication.getSharedInstance(), getString(R.string.max_num_categories_reached), Toast.LENGTH_SHORT).show();
                        } else {
                            AlertDialog.Builder newCateg = new AlertDialog.Builder(MainActivity.this);
-                           newCateg.setTitle("Add a new category");
+                           newCateg.setTitle(getString(R.string.add_new_category));
 
                            final EditText input = new EditText(MainActivity.this);
                            input.setInputType(InputType.TYPE_CLASS_TEXT);
                            newCateg.setView(input);
 
-                           newCateg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                           newCateg.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
                                @Override
                                public void onClick(final DialogInterface dialog, int which) {
                                    if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())) {
-                                       Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
+                                       Toast.makeText(getApplicationContext(), getString(R.string.category_already_exists), Toast.LENGTH_LONG).show();
                                    }else if(input.getText().toString().isEmpty()){
-                                       Toast.makeText(getApplicationContext(), "Enter a name for the category", Toast.LENGTH_LONG).show();
+                                       Toast.makeText(getApplicationContext(), getString(R.string.enter_category_name), Toast.LENGTH_LONG).show();
                                    }else{
                                        for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
                                            if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
@@ -316,48 +263,16 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                                            }
                                            else{
                                                BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
-                                               //clickedItem.setCategory(input.getText().toString());
-                                               //itemAdapter.notifyDataSetChanged();
-                                               adapter.add(input.getText().toString());
-                                               adapter.notifyDataSetChanged();
+                                               mCategoryAdapter.add(input.getText().toString());
+                                               mCategoryAdapter.notifyDataSetChanged();
                                                break;
                                            }
                                        }
                                        dialog.dismiss();
                                    }
-
-                                /*BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString(), new DataSource.Callback<Boolean>() {
-                                    @Override
-                                    public void onSuccess(Boolean aBoolean) {
-                                        if(aBoolean){
-                                            Toast.makeText(getApplicationContext(), "Category already exists", Toast.LENGTH_LONG).show();
-                                        }
-                                        else{
-                                            for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
-                                                if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
-                                                    continue;
-                                                }
-                                                else{
-                                                    BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
-                                                    //clickedItem.setCategory(input.getText().toString());
-                                                    //itemAdapter.notifyDataSetChanged();
-                                                    adapter.add(input.getText().toString());
-                                                    adapter.notifyDataSetChanged();
-                                                    break;
-                                                }
-                                            }
-                                            dialog.dismiss();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(String errorMessage) {
-
-                                    }
-                                });*/
                                }
                            });
-                           newCateg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                           newCateg.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                                @Override
                                public void onClick(DialogInterface dialog, int which) {
                                    dialog.cancel();
@@ -371,78 +286,52 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 minus.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(clickedItem.getCategory().equals("All")){
-                            Toast.makeText(getApplicationContext(), "Cannot remove this category", Toast.LENGTH_LONG).show();
+                        if(mClickedItem.getCategory().equals(getString(R.string.all))){
+                            Toast.makeText(getApplicationContext(), getString(R.string.cannot_remove_category), Toast.LENGTH_LONG).show();
                         }else{
-                            int ind = adapter.getPosition(clickedItem.getCategory());
-                            adapter.remove(clickedItem.getCategory());
-                            BlocSpotApplication.getSharedDataSource().removeCategory(clickedItem.getCategory());
-                            if(adapter.getCount() > ind){
-                                clickedItem.setCategory(adapter.getItem(ind));
+                            int ind = mCategoryAdapter.getPosition(mClickedItem.getCategory());
+                            mCategoryAdapter.remove(mClickedItem.getCategory());
+                            BlocSpotApplication.getSharedDataSource().removeCategory(mClickedItem.getCategory());
+                            if(mCategoryAdapter.getCount() > ind){
+                                mClickedItem.setCategory(mCategoryAdapter.getItem(ind));
                             }else{
-                                clickedItem.setCategory("All");
+                                mClickedItem.setCategory(getString(R.string.all));
                             }
-                           // if(!adapter.getItem(ind).isEmpty()){
-                             //   clickedItem.setCategory(adapter.getItem(ind));
-                            //}
-                            //clickedItem.setCategory("All");
-                            itemAdapter.notifyDataSetChanged();
-                            adapter.notifyDataSetChanged();
+                            mItemAdapter.notifyDataSetChanged();
+                            mCategoryAdapter.notifyDataSetChanged();
                         }
                     }
                 });
-                adapter.clear();
-                adapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
+
+                mCategoryAdapter.clear();
+                mCategoryAdapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
                 categBuilder.setView(dialogView);
-                categBuilder.setSingleChoiceItems(adapter, adapter.getPosition(clickedItem.getCategory()), new DialogInterface.OnClickListener() {
+                categBuilder.setSingleChoiceItems(mCategoryAdapter, mCategoryAdapter.getPosition(mClickedItem.getCategory()), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        clickedItem.setCategory(adapter.getItem(which));
-                        itemAdapter.notifyDataSetChanged();
+                        mClickedItem.setCategory(mCategoryAdapter.getItem(which));
+                        mItemAdapter.notifyDataSetChanged();
                     }
                 });
                 categBuilder.show();
-
-                /*AlertDialog.Builder categBuilder = new AlertDialog.Builder(this, 2);
-                LayoutInflater inflater = this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.category_dialog, null);
-
-                ImageButton add = (ImageButton) dialogView.findViewById(R.id.category_dialog_add_button);
-                add.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        v.setBackgroundColor(R.color.red);
-                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
-                        adapter.add("hotels");
-                    }
-                });
-
-                categBuilder.setView(dialogView);
-                categBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        Toast.makeText(getApplicationContext(), "Category", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                categBuilder.show();*/
                 break;
 
             case R.id.popup_edit_note :
                 AlertDialog.Builder noteBuilder = new AlertDialog.Builder(this);
-                noteBuilder.setTitle("Note for " + clickedItem.getLocation());
+                noteBuilder.setTitle(getString(R.string.note_for) + mClickedItem.getLocation());
 
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setText(clickedItem.getNote());
+                input.setText(mClickedItem.getNote());
                 noteBuilder.setView(input);
 
-                noteBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                noteBuilder.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        clickedItem.setNote(input.getText().toString());
-                        itemAdapter.notifyDataSetChanged();
-                        //noteView.
+                        mClickedItem.setNote(input.getText().toString());
+                        mItemAdapter.notifyDataSetChanged();
                     }
                 });
-                noteBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                noteBuilder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -452,13 +341,13 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 break;
 
             case R.id.popup_save:
-                BlocSpotApplication.getSharedDataSource().insertPoint(clickedItem);
+                BlocSpotApplication.getSharedDataSource().insertPoint(mClickedItem);
+                Toast.makeText(this, mClickedItem.getLocation() + getString(R.string.has_been_saved), Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.popup_delete :
-                BlocSpotApplication.getSharedDataSource().getPoints().remove(clickedItemPosition);
-               // deletions.add(clickedItemPosition);
-                itemAdapter.notifyItemRemoved(clickedItemPosition);
+                BlocSpotApplication.getSharedDataSource().getPoints().remove(mClickedItemPosition);
+                mItemAdapter.notifyItemRemoved(mClickedItemPosition);
                 break;
         }
         return false;
@@ -474,25 +363,22 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     public PointItem getPointItem(ItemAdapter itemAdapter, int position) {
         if(BlocSpotApplication.getSharedDataSource().getPoints().size() != 0){
-            if(dialog != null && dialog.isShowing()){
-                dialog.dismiss();
+            if(mPdDialog != null && mPdDialog.isShowing()){
+                mPdDialog.dismiss();
             }
             return BlocSpotApplication.getSharedDataSource().getPoints().get(position);
         }else{
-            dialog = new ProgressDialog(this);
-            dialog.setCancelable(false);
-            dialog.setMessage("Loading..");
-            dialog.isIndeterminate();
-            dialog.show();
+            mPdDialog = new ProgressDialog(this);
+            mPdDialog.setCancelable(false);
+            mPdDialog.setMessage(getString(R.string.loading));
+            mPdDialog.isIndeterminate();
+            mPdDialog.show();
         }
         return null;
     }
 
     @Override
     public int getItemCount(ItemAdapter itemAdapter) {
-        if(BlocSpotApplication.getSharedDataSource().getPoints() == null){
-            return 0;
-        }
         if(BlocSpotApplication.getSharedDataSource().getPoints().size() != 0){
             return BlocSpotApplication.getSharedDataSource().getPoints().size();
         }

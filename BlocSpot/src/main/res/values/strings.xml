@@ -24,16 +24,19 @@
     <string name="categ_yellow">Yellow</string>
     <string name="categ_aqua">Aqua</string>
     <string name="categ_magenta">Magenta</string>
-    <string-array name="places">
-        <item >ATM</item>
-        <item >Bank</item>
-        <item >Cafe</item>
-        <item >Fire-Station</item>
-        <item >Hospital</item>
-        <item >Pharmacy</item>
-        <item >Police</item>
-        <item >Restaurant</item>
-        <item >Shopping Mall</item>
-    </string-array>
+    <string name="filter_by_category">Filter By Category</string>
+    <string name="marked_as_visited">Marked as visited</string>
+    <string name="navigate">navigate</string>
+    <string name="max_num_categories_reached">Maximum number of categories reached</string>
+    <string name="add_new_category">Add a new category</string>
+    <string name="OK">OK</string>
+    <string name="category_already_exists">Category already exists</string>
+    <string name="enter_category_name">Enter a name for the category</string>
+    <string name="cancel">Cancel</string>
+    <string name="all">All</string>
+    <string name="cannot_remove_category">Cannot remove this category</string>
+    <string name="note_for">"Note for "</string>
+    <string name="has_been_saved">" has been saved"</string>
+    <string name="loading">Loading..</string>
 
 </resources>
