@@ -129,19 +129,19 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ItemAdapterVie
             }
 
             String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(item.getCategory());
-            if(color.equals("White")){
+            if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_white))){
                 visitedBox.setBackgroundResource(R.color.white);
-            }else if(color.equals("Red")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_red))){
                 visitedBox.setBackgroundResource(R.color.red);
-            }else if(color.equals("Green")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_green))){
                 visitedBox.setBackgroundResource(R.color.green);
-            }else if(color.equals("Blue")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_blue))){
                 visitedBox.setBackgroundResource(R.color.blue);
-            }else if(color.equals("Yellow")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_yellow))){
                 visitedBox.setBackgroundResource(R.color.yellow);
-            }else if(color.equals("Aqua")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_aqua))){
                 visitedBox.setBackgroundResource(R.color.aqua);
-            }else if(color.equals("Magenta")){
+            }else if(color.equals(BlocSpotApplication.getSharedInstance().getString(R.string.categ_magenta))){
                 visitedBox.setBackgroundResource(R.color.magenta);
             }
 
