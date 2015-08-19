@@ -42,7 +42,7 @@ import java.util.List;
 public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarkerClickListener, View.OnClickListener {
     private GoogleMap mMap;
     private Toolbar toolbar;
-    List<Marker> placeMarkers;
+    List<Marker> placeMarkers = new ArrayList<>();
     Marker userPosition;
     private int nav = 0;
     private AlertDialog.Builder markerDialog;
@@ -81,6 +81,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
+                //If user used the 'Navigate To...' option on a POI
                 if(nav != -1){
                     placeMarkers.get(nav).showInfoWindow();
                     CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -92,6 +93,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                             .build();
                     mMap.moveCamera(CameraUpdateFactory
                             .newCameraPosition(cameraPosition));
+                //If Map icon was clicked
                 }else{
                     displayAllPointsInView(placeMarkers);
                 }
@@ -100,18 +102,17 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
     }
 
     public void setMapPoints() {
+        List<PointItem> result = BlocSpotApplication.getSharedDataSource().getPoints();
+        if (result == null || result.size() == 0) {
+            return;
+        }
+
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
         dialog.setMessage("Loading Map..");
         dialog.isIndeterminate();
         dialog.show();
 
-        List<PointItem> result = BlocSpotApplication.getSharedDataSource().getPoints();
-        if (result == null || result.size() == 0) {
-            return;
-        }
-
-        placeMarkers = new ArrayList<Marker>();
         for (int i = 0; i < result.size(); i++) {
             if (result.get(i) != null && !result.get(i).isVisited()){
                 placeMarkers.add(mMap.addMarker(new MarkerOptions()
@@ -142,23 +143,34 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         userPosition = mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
-                        new LatLng(40.54992600000001,
-                                -74.20030700000001))
+                        new LatLng(BlocSpotApplication.getSharedDataSource().getLocation().getLatitude(),
+                                BlocSpotApplication.getSharedDataSource().getLocation().getLongitude()))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_pin)));
     }
 
     public void displayAllPointsInView(List<Marker> items) {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        if(!items.isEmpty()){
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        for (Marker marker : items) {
-            builder.include(marker.getPosition());
+            for (Marker marker : items) {
+                builder.include(marker.getPosition());
+            }
+            LatLngBounds bounds = builder.build();
+
+            int padding = 100;
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+
+            mMap.animateCamera(cu);
+        }else{
+            userPosition.showInfoWindow();
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(userPosition.getPosition())
+                    .zoom(18)
+                    .tilt(90)
+                    .build();
+            mMap.moveCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
         }
-        LatLngBounds bounds = builder.build();
-
-        int padding = 100;
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-
-        mMap.animateCamera(cu);
     }
 
     @Override
