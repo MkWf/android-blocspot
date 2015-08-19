@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  This class is used to activity_yelpapi places using Places API using keywords like police,hospital etc.
+ *
  *
  * @author Karn Shah
  * @Date   10/3/2013
