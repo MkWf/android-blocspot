@@ -64,6 +64,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
 
         toolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initMap() {

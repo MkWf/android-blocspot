@@ -40,7 +40,7 @@ public class DataSource {
     private ExecutorService executorService;
     private Location loc;
     private List<Place> places;
-    private List<PointItem> items;
+    private List<PointItem> items = new ArrayList<>();
     private List<PointItem> backupItems = new ArrayList<>();
     private List<Category> categories;
     private List<String> colors = new ArrayList<>();
@@ -150,7 +150,6 @@ public class DataSource {
                     return;
                 }
 
-                items = new ArrayList<PointItem>();
                 writableDatabase = databaseOpenHelper.getWritableDatabase();
                 for (int i = 0; i < places.size(); i++) {
                     if (places.get(i) != null) {
@@ -250,7 +249,7 @@ public class DataSource {
     }
 
     public boolean searchForCategory(String category){
-        Cursor c = writableDatabase.query(categoryTable.getName(), null, "category_name = ?", new String[] {category}, null, null, null);
+        Cursor c = writableDatabase.query(categoryTable.getName(), null, "category_name = ?", new String[]{category}, null, null, null);
         if(c.getCount() == 0){
             return false;
         }

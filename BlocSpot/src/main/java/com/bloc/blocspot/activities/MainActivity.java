@@ -4,9 +4,6 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -27,7 +24,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.bloc.blocspot.BlocSpotApplication;
@@ -159,20 +155,22 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }else{
             BlocSpotApplication.getSharedDataSource().setLocation(location);
-
-            BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
-                @Override
-                public void onSuccess(List<PointItem> pointItems) {
-                    if (!pointItems.isEmpty()) {
-                        //items.addAll(0, pointItems);
-                        itemAdapter.notifyItemRangeInserted(0, pointItems.size());
+            //Should only run when the app first launches and not when returning from a paused/stopped state
+            if(BlocSpotApplication.getSharedDataSource().getPoints().isEmpty()){
+                BlocSpotApplication.getSharedDataSource().fetchPointItemPlaces(new DataSource.Callback<List<PointItem>>() {
+                    @Override
+                    public void onSuccess(List<PointItem> pointItems) {
+                        if (!pointItems.isEmpty()) {
+                            //items.addAll(0, pointItems);
+                            itemAdapter.notifyDataSetChanged();
+                        }
                     }
-                }
 
-                @Override
-                public void onError(String errorMessage) {
-                }
-            });
+                    @Override
+                    public void onError(String errorMessage) {
+                    }
+                });
+            }
         }
     }
 
@@ -197,13 +195,13 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
         this.actionbarMenu = menu;
 
-        SearchManager searchMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        /*SearchManager searchMgr = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.main_action_search).getActionView();
         String n = this.getPackageName();
         ComponentName c = new ComponentName("com.bloc.blocspot.blocspot","com.bloc.blocspot.activities.YelpAPI");
 
         searchView.setSearchableInfo((searchMgr.getSearchableInfo(c)));
-        searchView.setIconifiedByDefault(false);
+        searchView.setIconifiedByDefault(false);*/
 
         return super.onCreateOptionsMenu(menu);
         //return true;
@@ -231,6 +229,17 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 });
                 categBuilder.show();
             case R.id.main_action_search:
+                BlocSpotApplication.getSharedDataSource().fetchUpdatedPlaces(new DataSource.Callback<List<PointItem>>() {
+                    @Override
+                    public void onSuccess(List<PointItem> pointItems) {
+                        if (!pointItems.isEmpty()) {
+                            itemAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {}
+                });
                 break;
             default:
                 break;
@@ -493,17 +502,5 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     public void onLocationChanged(Location location) {
         BlocSpotApplication.getSharedDataSource().setLocation(location);
-
-        BlocSpotApplication.getSharedDataSource().fetchUpdatedPlaces(new DataSource.Callback<List<PointItem>>() {
-            @Override
-            public void onSuccess(List<PointItem> pointItems) {
-                if (!pointItems.isEmpty()) {
-                    itemAdapter.notifyItemRangeInserted(0, pointItems.size());
-                }
-            }
-
-            @Override
-            public void onError(String errorMessage) {}
-        });
     }
 }

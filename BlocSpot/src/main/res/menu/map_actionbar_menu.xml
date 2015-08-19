@@ -2,12 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/map_action_switch_to_list"
-        android:icon="@drawable/ic_action_list"
-        android:title="@string/menu_switch_to_list"
-        android:orderInCategory="0"
-        app:showAsAction="always"/>
-
+    <!--
     <item android:id="@+id/map_action_search"
         android:icon="@drawable/ic_action_search"
         android:title="@string/menu_search"
@@ -19,5 +14,6 @@
         android:title="@string/menu_filter_by_category"
         android:orderInCategory="2"
         app:showAsAction="always"/>
+        -->
 
 </menu>
