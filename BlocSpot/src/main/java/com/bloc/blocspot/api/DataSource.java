@@ -98,6 +98,7 @@ public class DataSource {
     public List<Place> getPlaces(){ return mPlaces; }
     public List<Category> getCategories(){ return mCategories; }
     public List<PointItem> getPoints(){ return mPointItems; }
+    public List<PointItem> getBackupPoints(){ return mBackupPointItems; }
     public List<String> getCategoryColors(){ return mCategoryColors; }
 
     public List<String> getCategoryNames(){
@@ -122,21 +123,24 @@ public class DataSource {
 
     public void filterPointsByCategory(String category){
         if(category.equals("All")){
-            mPointItems.removeAll(mPointItems);
+            mPointItems.clear();
             mPointItems.addAll(mBackupPointItems);
             Collections.sort(mPointItems, new PointItem());
         }else{
-            mPointItems.removeAll(mPointItems);
-            mPointItems.addAll(mBackupPointItems);
             List<PointItem> filter = new ArrayList<>();
-            for(int i = 0; i< mPointItems.size(); i++){
-                if(mPointItems.get(i).getCategory().equals(category)){
+            for(int i = 0; i< mBackupPointItems.size(); i++){
+                if(mBackupPointItems.get(i).getCategory().equals(category)){
                     filter.add(mPointItems.get(i));
                 }
             }
-            mPointItems.removeAll(mPointItems);
+            mPointItems.clear();
             mPointItems.addAll(filter);
         }
+    }
+
+    public void deletePoint(int mClickedItemPosition) {
+        mPointItems.remove(mClickedItemPosition);
+        mBackupPointItems.remove(mClickedItemPosition);
     }
 
     public void fetchPointItemPlaces(final Callback<List<PointItem>> callback) {
@@ -144,7 +148,6 @@ public class DataSource {
         submitTask(new Runnable() {
             @Override
             public void run() {
-                //currentLocation();
                 mPlacesService = new PlacesService(API_KEY);
                 mPlaces = mPlacesService.findPlaces(mUserLocation.getLatitude(), mUserLocation.getLongitude());
                 if (mPlaces.size() == 0) {
@@ -166,7 +169,6 @@ public class DataSource {
                         mPointItems.get(i).setVicinity(mPlaces.get(i).getVicinity());
                     }
                 }
-                mBackupPointItems.addAll(mPointItems);
 
                 if(!searchForCategory("All")) {
                     new CategoryTable.Builder()
@@ -179,6 +181,7 @@ public class DataSource {
                 mCategories.addAll(fetchCategories());
 
                 Collections.sort(mPointItems, new PointItem());
+                mBackupPointItems.addAll(mPointItems);
 
                 final List<PointItem> finalItems = mPointItems;
                 callbackThreadHandler.post(new Runnable() {
@@ -218,10 +221,10 @@ public class DataSource {
                     }
                 }
 
+                Collections.sort(mPointItems, new PointItem());
+
                 mBackupPointItems.clear();
                 mBackupPointItems.addAll(mPointItems);
-
-                Collections.sort(mPointItems, new PointItem());
 
                 final List<PointItem> finalItems = mPointItems;
                 callbackThreadHandler.post(new Runnable() {

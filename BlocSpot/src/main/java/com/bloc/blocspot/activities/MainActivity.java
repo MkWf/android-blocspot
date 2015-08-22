@@ -349,7 +349,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 break;
 
             case R.id.popup_delete :
-                BlocSpotApplication.getSharedDataSource().getPoints().remove(mClickedItemPosition);
+                BlocSpotApplication.getSharedDataSource().deletePoint(mClickedItemPosition);
                 mItemAdapter.notifyItemRemoved(mClickedItemPosition);
                 break;
         }
