@@ -60,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private ArrayAdapter<String> mCategoryAdapter;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private int mCurrentCategFilter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,13 +171,15 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                 mCategoryAdapter.clear();
                 mCategoryAdapter.addAll(BlocSpotApplication.getSharedDataSource().getCategoryNames());
                 categBuilder.setTitle(getString(R.string.filter_by_category));
-                categBuilder.setSingleChoiceItems(mCategoryAdapter, 0, new DialogInterface.OnClickListener() {
+                categBuilder.setSingleChoiceItems(mCategoryAdapter, mCurrentCategFilter, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        mCurrentCategFilter = which;
                         BlocSpotApplication.getSharedDataSource().filterPointsByCategory(mCategoryAdapter.getItem(which));
                         mItemAdapter.notifyDataSetChanged();
                     }
                 });
                 categBuilder.show();
+                break;
             case R.id.main_action_search:
                 BlocSpotApplication.getSharedDataSource().fetchUpdatedPlaces(new DataSource.Callback<List<PointItem>>() {
                     @Override
