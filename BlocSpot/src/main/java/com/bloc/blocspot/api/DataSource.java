@@ -271,11 +271,16 @@ public class DataSource {
     public void setLocation(Location location){ mUserLocation = location; }
 
     public void insertPoint(PointItem item){
+        boolean isVisited = false;
+        if(item.isVisited()){
+            isVisited = true;
+        }
         new PointTable.Builder()
                 .setLocation(item.getLocation())
                 .setLatitude(item.getLat())
                 .setLongitude(item.getLon())
                 .setVicinity(item.getVicinity())
+                .setVisited(isVisited)
                 .insert(mWritableDatabase);
     }
 

@@ -17,10 +17,10 @@ public class PointTable extends Table {
             return this;
         }
 
-        /*public Builder setNote(String feedURL) {
-            values.put(COLUMN_POINT_NOTE, feedURL);
+        public Builder setNote(String note) {
+            values.put(COLUMN_POINT_NOTE, note);
             return this;
-        }*/
+        }
 
         public Builder setLatitude(double pointLatitude) {
             values.put(COLUMN_POINT_LATITUDE, pointLatitude);
@@ -37,7 +37,7 @@ public class PointTable extends Table {
             return this;
         }
 
-       /* public Builder setVisited(String pointVisited) {
+        public Builder setVisited(boolean pointVisited) {
             values.put(COLUMN_POINT_VISITED, pointVisited);
             return this;
         }
@@ -45,7 +45,7 @@ public class PointTable extends Table {
         public Builder setCategory(String pointCategory) {
             values.put(COLUMN_POINT_CATEGORY, pointCategory);
             return this;
-        }*/
+        }
 
         @Override
         public long insert(SQLiteDatabase writableDB) {
@@ -105,6 +105,6 @@ public class PointTable extends Table {
                 + COLUMN_POINT_LONGITUDE + " REAL,"
                 + COLUMN_POINT_VICINITY+ " TEXT,"
                 + COLUMN_POINT_VISITED + " INTEGER DEFAULT 0,"
-                + COLUMN_POINT_CATEGORY+ " TEXT)";
+                + COLUMN_POINT_CATEGORY+ " TEXT DEFAULT 'ALL')";
     }
 }
