@@ -281,6 +281,7 @@ public class DataSource {
                 .setLongitude(item.getLon())
                 .setVicinity(item.getVicinity())
                 .setVisited(isVisited)
+                .setNote(item.getNote())
                 .insert(mWritableDatabase);
     }
 
