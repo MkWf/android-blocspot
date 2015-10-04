@@ -50,7 +50,6 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
 
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    private Menu mToolbarMenu;
     private ItemAdapter mItemAdapter;
     private ProgressDialog mPdDialog;
     private PointItem mClickedItem;
@@ -154,7 +153,6 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_actionbar_menu, menu);
-        this.mToolbarMenu = menu;
 
         return super.onCreateOptionsMenu(menu);
     }

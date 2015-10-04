@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Handler;
 
 import com.bloc.blocspot.BlocSpotApplication;
@@ -30,17 +29,16 @@ import java.util.concurrent.Executors;
 public class DataSource {
 
     public static int MAX_CATEGORIES = 7;
-    private final String API_KEY = "AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0";
+    private final String API_KEY = BlocSpotApplication.getSharedInstance().getString(R.string.API_KEY);
 
-    private LocationManager mLocationManager;
     private Context mContext;
     private ExecutorService mExecutorService;
     private Location mUserLocation;
-    private List<Place> mPlaces;
-    private List<PointItem> mPointItems = new ArrayList<>();
-    private List<PointItem> mBackupPointItems = new ArrayList<>();
-    private List<Category> mCategories;
-    private List<String> mCategoryColors = new ArrayList<>();
+    private List<Place> mListPlaces;
+    private List<PointItem> mListPointItems = new ArrayList<>();
+    private List<PointItem> mListBackupPointItems = new ArrayList<>();
+    private List<Category> mListCategories;
+    private List<String> mListCategoryColors = new ArrayList<>();
     private DatabaseOpenHelper mDatabaseOpenHelper;
     private CategoryTable mCategoryTable;
     private PointTable mPointTable;
@@ -84,22 +82,22 @@ public class DataSource {
     }
 
     private void initCategoryColors() {
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_white));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_red));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_green));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_blue));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_yellow));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_aqua));
-        mCategoryColors.add(mContext.getResources().getString(R.string.categ_magenta));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_white));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_red));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_green));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_blue));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_yellow));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_aqua));
+        mListCategoryColors.add(mContext.getResources().getString(R.string.categ_magenta));
     }
 
     public Location getLocation(){ return mUserLocation; }
     public Context getContext(){ return mContext;}
-    public List<Place> getPlaces(){ return mPlaces; }
-    public List<Category> getCategories(){ return mCategories; }
-    public List<PointItem> getPoints(){ return mPointItems; }
-    public List<PointItem> getBackupPoints(){ return mBackupPointItems; }
-    public List<String> getCategoryColors(){ return mCategoryColors; }
+    public List<Place> getPlaces(){ return mListPlaces; }
+    public List<Category> getCategories(){ return mListCategories; }
+    public List<PointItem> getPoints(){ return mListPointItems; }
+    public List<PointItem> getBackupPoints(){ return mListBackupPointItems; }
+    public List<String> getCategoryColors(){ return mListCategoryColors; }
 
     public List<String> getCategoryNames(){
         List<String> names = new ArrayList<String>();
@@ -110,10 +108,10 @@ public class DataSource {
     }
 
     public String getCategoryColor(String category){
-        if(mCategories != null){
-            for(int i = 0; i< mCategories.size(); i++){
-                if(mCategories.get(i).getName().equals(category)){
-                    return mCategories.get(i).getColor();
+        if(mListCategories != null){
+            for(int i = 0; i< mListCategories.size(); i++){
+                if(mListCategories.get(i).getName().equals(category)){
+                    return mListCategories.get(i).getColor();
                 }
             }
             return "White";
@@ -123,24 +121,24 @@ public class DataSource {
 
     public void filterPointsByCategory(String category){
         if(category.equals("All")){
-            mPointItems.clear();
-            mPointItems.addAll(mBackupPointItems);
-            Collections.sort(mPointItems, new PointItem());
+            mListPointItems.clear();
+            mListPointItems.addAll(mListBackupPointItems);
+            Collections.sort(mListPointItems, new PointItem());
         }else{
             List<PointItem> filter = new ArrayList<>();
-            for(int i = 0; i< mBackupPointItems.size(); i++){
-                if(mBackupPointItems.get(i).getCategory().equals(category)){
-                    filter.add(mPointItems.get(i));
+            for(int i = 0; i< mListBackupPointItems.size(); i++){
+                if(mListBackupPointItems.get(i).getCategory().equals(category)){
+                    filter.add(mListPointItems.get(i));
                 }
             }
-            mPointItems.clear();
-            mPointItems.addAll(filter);
+            mListPointItems.clear();
+            mListPointItems.addAll(filter);
         }
     }
 
     public void deletePoint(int mClickedItemPosition) {
-        mPointItems.remove(mClickedItemPosition);
-        mBackupPointItems.remove(mClickedItemPosition);
+        mListPointItems.remove(mClickedItemPosition);
+        mListBackupPointItems.remove(mClickedItemPosition);
     }
 
     public void fetchPointItemPlaces(final Callback<List<PointItem>> callback) {
@@ -149,24 +147,24 @@ public class DataSource {
             @Override
             public void run() {
                 mPlacesService = new PlacesService(API_KEY);
-                mPlaces = mPlacesService.findPlaces(mUserLocation.getLatitude(), mUserLocation.getLongitude());
-                if (mPlaces.size() == 0) {
+                mListPlaces = mPlacesService.findPlaces(mUserLocation.getLatitude(), mUserLocation.getLongitude());
+                if (mListPlaces.size() == 0) {
                     return;
                 }
 
                 mWritableDatabase = mDatabaseOpenHelper.getWritableDatabase();
-                for (int i = 0; i < mPlaces.size(); i++) {
-                    if (mPlaces.get(i) != null) {
-                        mPointItems.add(new PointItem());
-                        mPointItems.get(i).setLocation(mPlaces.get(i).getName());
-                        double pointDistance = distBetweenGPSPointsInMiles(mUserLocation.getLatitude(), mUserLocation.getLongitude(), mPlaces.get(i).getLatitude(), mPlaces.get(i).getLongitude());
+                for (int i = 0; i < mListPlaces.size(); i++) {
+                    if (mListPlaces.get(i) != null) {
+                        mListPointItems.add(new PointItem());
+                        mListPointItems.get(i).setLocation(mListPlaces.get(i).getName());
+                        double pointDistance = distBetweenGPSPointsInMiles(mUserLocation.getLatitude(), mUserLocation.getLongitude(), mListPlaces.get(i).getLatitude(), mListPlaces.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
-                        mPointItems.get(i).setDistance("< " + Integer.toString(dist) + " mi");
-                        mPointItems.get(i).setDistanceValue(dist);
-                        mPointItems.get(i).setLat(mPlaces.get(i).getLatitude());
-                        mPointItems.get(i).setLon(mPlaces.get(i).getLongitude());
-                        mPointItems.get(i).setVicinity(mPlaces.get(i).getVicinity());
+                        mListPointItems.get(i).setDistance("< " + Integer.toString(dist) + " mi");
+                        mListPointItems.get(i).setDistanceValue(dist);
+                        mListPointItems.get(i).setLat(mListPlaces.get(i).getLatitude());
+                        mListPointItems.get(i).setLon(mListPlaces.get(i).getLongitude());
+                        mListPointItems.get(i).setVicinity(mListPlaces.get(i).getVicinity());
                     }
                 }
 
@@ -177,13 +175,13 @@ public class DataSource {
                             .insert(mWritableDatabase);
                 }
 
-                mCategories = new ArrayList<Category>();
-                mCategories.addAll(fetchCategories());
+                mListCategories = new ArrayList<Category>();
+                mListCategories.addAll(fetchCategories());
 
-                Collections.sort(mPointItems, new PointItem());
-                mBackupPointItems.addAll(mPointItems);
+                Collections.sort(mListPointItems, new PointItem());
+                mListBackupPointItems.addAll(mListPointItems);
 
-                final List<PointItem> finalItems = mPointItems;
+                final List<PointItem> finalItems = mListPointItems;
                 callbackThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -199,34 +197,34 @@ public class DataSource {
         submitTask(new Runnable() {
             @Override
             public void run() {
-                mPlaces = mPlacesService.findPlaces(mUserLocation.getLatitude(), mUserLocation.getLongitude());
+                mListPlaces = mPlacesService.findPlaces(mUserLocation.getLatitude(), mUserLocation.getLongitude());
 
-                mPointItems.clear();
-                if (mPlaces.size() == 0) {
+                mListPointItems.clear();
+                if (mListPlaces.size() == 0) {
                     return;
                 }
 
-                for (int i = 0; i < mPlaces.size(); i++) {
-                    if (mPlaces.get(i) != null) {
-                        mPointItems.add(new PointItem());
-                        mPointItems.get(i).setLocation(mPlaces.get(i).getName());
-                        double pointDistance = distBetweenGPSPointsInMiles(mUserLocation.getLatitude(), mUserLocation.getLongitude(), mPlaces.get(i).getLatitude(), mPlaces.get(i).getLongitude());
+                for (int i = 0; i < mListPlaces.size(); i++) {
+                    if (mListPlaces.get(i) != null) {
+                        mListPointItems.add(new PointItem());
+                        mListPointItems.get(i).setLocation(mListPlaces.get(i).getName());
+                        double pointDistance = distBetweenGPSPointsInMiles(mUserLocation.getLatitude(), mUserLocation.getLongitude(), mListPlaces.get(i).getLatitude(), mListPlaces.get(i).getLongitude());
                         int dist = (int) pointDistance + 1;
 
-                        mPointItems.get(i).setDistance("< " + Integer.toString(dist) + " mi");
-                        mPointItems.get(i).setDistanceValue(dist);
-                        mPointItems.get(i).setLat(mPlaces.get(i).getLatitude());
-                        mPointItems.get(i).setLon(mPlaces.get(i).getLongitude());
-                        mPointItems.get(i).setVicinity(mPlaces.get(i).getVicinity());
+                        mListPointItems.get(i).setDistance("< " + Integer.toString(dist) + " mi");
+                        mListPointItems.get(i).setDistanceValue(dist);
+                        mListPointItems.get(i).setLat(mListPlaces.get(i).getLatitude());
+                        mListPointItems.get(i).setLon(mListPlaces.get(i).getLongitude());
+                        mListPointItems.get(i).setVicinity(mListPlaces.get(i).getVicinity());
                     }
                 }
 
-                Collections.sort(mPointItems, new PointItem());
+                Collections.sort(mListPointItems, new PointItem());
 
-                mBackupPointItems.clear();
-                mBackupPointItems.addAll(mPointItems);
+                mListBackupPointItems.clear();
+                mListBackupPointItems.addAll(mListPointItems);
 
-                final List<PointItem> finalItems = mPointItems;
+                final List<PointItem> finalItems = mListPointItems;
                 callbackThreadHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -328,13 +326,13 @@ public class DataSource {
             }
         });
 
-        mCategories.add(new Category(category, color));
+        mListCategories.add(new Category(category, color));
     }
 
     public void removeCategory(String category){
-        for(int i=0; i< mCategories.size(); i++){
-            if(mCategories.get(i).getName().equals(category)){
-                mCategories.remove(i);
+        for(int i=0; i< mListCategories.size(); i++){
+            if(mListCategories.get(i).getName().equals(category)){
+                mListCategories.remove(i);
             }
         }
         mWritableDatabase.delete(mCategoryTable.getName(), "category_name = ?", new String[]{category});

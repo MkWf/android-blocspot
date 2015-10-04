@@ -38,5 +38,6 @@
     <string name="note_for">"Note for "</string>
     <string name="has_been_saved">" has been saved"</string>
     <string name="loading">Loading..</string>
+    <string name="API_KEY">AIzaSyAhYD6RyZbvacqp8ZOpG4bOUozZDN-5zP0</string>
 
 </resources>

@@ -32,22 +32,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- *
- * @author Karn Shah
- * @Date   10/3/2013
- *
- */
+
 public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarkerClickListener, View.OnClickListener {
     private GoogleMap mMap;
     private Toolbar mToolBar;
-    private List<Marker> mPlaceMarkers = new ArrayList<>();
-    private Marker mUserPositionMarker;
+    private List<Marker> mListPlaceMarkers = new ArrayList<>();
+    private Marker mMarkerUserPosition;
     private int mNavIndex = 0;
-    private AlertDialog.Builder mADMarker;
-    private AlertDialog mADDestroyer;
-    private PointItem mClickedMarkerItem;
+    private AlertDialog.Builder mDialogMarker;
+    private AlertDialog mDialogDestroyer;
+    private PointItem mClickedPointItem;
     private int mClickedMarkerItemPosition = -1;
 
     @Override
@@ -82,7 +76,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
             public void onMapLoaded() {
                 //If user used the 'Navigate To...' option on a POI
                 if(mNavIndex != -1){
-                    mPlaceMarkers.get(mNavIndex).showInfoWindow();
+                    mListPlaceMarkers.get(mNavIndex).showInfoWindow();
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(mNavIndex).getLat(),
                                     BlocSpotApplication.getSharedDataSource().getPoints().get(mNavIndex).getLon()))
@@ -94,7 +88,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                             .newCameraPosition(cameraPosition));
                 //If Map icon was clicked
                 }else{
-                    displayAllPointsInView(mPlaceMarkers);
+                    displayAllPointsInView(mListPlaceMarkers);
                 }
             }
         });
@@ -114,7 +108,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
 
         for (int i = 0; i < result.size(); i++) {
             if (result.get(i) != null && !result.get(i).isVisited()){
-                mPlaceMarkers.add(mMap.addMarker(new MarkerOptions()
+                mListPlaceMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
                                 new LatLng(result.get(i).getLat(), result
@@ -124,7 +118,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                         .snippet(result.get(i).getVicinity())));
                 setNonVisitedMarkers(BlocSpotApplication.getSharedDataSource().getCategoryColor(result.get(i).getCategory()), i);
             }else if(result.get(i) != null && result.get(i).isVisited()){
-                mPlaceMarkers.add(mMap.addMarker(new MarkerOptions()
+                mListPlaceMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(result.get(i).getLocation())
                         .position(
                                 new LatLng(result.get(i).getLat(), result
@@ -139,7 +133,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
     }
 
     public void setUserPoint(){
-        mUserPositionMarker = mMap.addMarker(new MarkerOptions()
+        mMarkerUserPosition = mMap.addMarker(new MarkerOptions()
                 .title("Your position")
                 .position(
                         new LatLng(BlocSpotApplication.getSharedDataSource().getLocation().getLatitude(),
@@ -161,9 +155,9 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
 
             mMap.animateCamera(cu);
         }else{
-            mUserPositionMarker.showInfoWindow();
+            mMarkerUserPosition.showInfoWindow();
             CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(mUserPositionMarker.getPosition())
+                    .target(mMarkerUserPosition.getPosition())
                     .zoom(18)
                     .tilt(90)
                     .build();
@@ -174,16 +168,16 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if(marker.equals(mUserPositionMarker)){
+        if(marker.equals(mMarkerUserPosition)){
             return false;
         }
-        mClickedMarkerItemPosition = mPlaceMarkers.indexOf(marker);
-        mClickedMarkerItem = BlocSpotApplication.getSharedDataSource().getPoints().get(mClickedMarkerItemPosition);
+        mClickedMarkerItemPosition = mListPlaceMarkers.indexOf(marker);
+        mClickedPointItem = BlocSpotApplication.getSharedDataSource().getPoints().get(mClickedMarkerItemPosition);
 
-        mADMarker = new AlertDialog.Builder(MapActivity.this);
+        mDialogMarker = new AlertDialog.Builder(MapActivity.this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.point_item_map_alert, null);
-        mADMarker.setView(dialogView);
+        mDialogMarker.setView(dialogView);
 
         TextView location = (TextView) dialogView.findViewById(R.id.map_dialog_location);
         TextView note = (TextView) dialogView.findViewById(R.id.map_dialog_note);
@@ -193,8 +187,8 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         ImageButton share = (ImageButton) dialogView.findViewById(R.id.map_dialog_share);
         ImageButton delete = (ImageButton) dialogView.findViewById(R.id.map_dialog_delete);
 
-        category.setText(mClickedMarkerItem.getCategory());
-        String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedMarkerItem.getCategory());
+        category.setText(mClickedPointItem.getCategory());
+        String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedPointItem.getCategory());
 
         if(color.equals(getResources().getString(R.string.categ_white))){
             category.setTextColor(getResources().getColor(R.color.white));
@@ -212,10 +206,10 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
             category.setTextColor(getResources().getColor(R.color.magenta));
         }
 
-        location.setText(mClickedMarkerItem.getLocation());
-        note.setText(mClickedMarkerItem.getNote());
+        location.setText(mClickedPointItem.getLocation());
+        note.setText(mClickedPointItem.getNote());
 
-        if(mClickedMarkerItem.isVisited()){
+        if(mClickedPointItem.isVisited()){
             visited.setChecked(true);
         }else{
             visited.setChecked(false);
@@ -226,7 +220,7 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
         share.setOnClickListener(this);
         delete.setOnClickListener(this);
 
-        mADDestroyer = mADMarker.show();
+        mDialogDestroyer = mDialogMarker.show();
 
         return true;
     }
@@ -235,23 +229,23 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.map_dialog_checkbox:
-                if(mClickedMarkerItem.isVisited()){
-                    mClickedMarkerItem.setVisited(false);
-                    setNonVisitedMarkers(BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedMarkerItem.getCategory()), mClickedMarkerItemPosition);
+                if(mClickedPointItem.isVisited()){
+                    mClickedPointItem.setVisited(false);
+                    setNonVisitedMarkers(BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedPointItem.getCategory()), mClickedMarkerItemPosition);
                 }else{
-                    mClickedMarkerItem.setVisited(true);
-                    setVisitedMarkers(BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedMarkerItem.getCategory()), mClickedMarkerItemPosition);
+                    mClickedPointItem.setVisited(true);
+                    setVisitedMarkers(BlocSpotApplication.getSharedDataSource().getCategoryColor(mClickedPointItem.getCategory()), mClickedMarkerItemPosition);
                 }
                 break;
             case R.id.map_dialog_category_button:
 
                 break;
             case R.id.map_dialog_navigate:
-                mADDestroyer.dismiss();
-                mPlaceMarkers.get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedMarkerItem)).showInfoWindow();
+                mDialogDestroyer.dismiss();
+                mListPlaceMarkers.get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedPointItem)).showInfoWindow();
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedMarkerItem)).getLat(),
-                                BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedMarkerItem)).getLon()))
+                        .target(new LatLng(BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedPointItem)).getLat(),
+                                BlocSpotApplication.getSharedDataSource().getPoints().get(BlocSpotApplication.getSharedDataSource().getPoints().indexOf(mClickedPointItem)).getLon()))
                         .zoom(18)
                         .tilt(90)
                         .build();
@@ -259,68 +253,68 @@ public class MapActivity extends ActionBarActivity implements GoogleMap.OnMarker
                         .newCameraPosition(cameraPosition));
                 break;
             case R.id.map_dialog_share:
-                mADDestroyer.dismiss();
+                mDialogDestroyer.dismiss();
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.putExtra(Intent.EXTRA_TEXT,
-                        String.format("Check this place out: %s, %s ", mClickedMarkerItem.getLocation(), mClickedMarkerItem.getVicinity()));
+                        String.format("Check this place out: %s, %s ", mClickedPointItem.getLocation(), mClickedPointItem.getVicinity()));
                 shareIntent.setType("text/plain");
                 Intent chooser = Intent.createChooser(shareIntent, getString(R.string.share_chooser_title));
                 startActivity(chooser);
                 break;
             case R.id.map_dialog_delete:
-                mADDestroyer.dismiss();
-                mPlaceMarkers.remove(mClickedMarkerItemPosition).remove();
-                BlocSpotApplication.getSharedDataSource().getPoints().remove(mClickedMarkerItem);
+                mDialogDestroyer.dismiss();
+                mListPlaceMarkers.remove(mClickedMarkerItemPosition).remove();
+                BlocSpotApplication.getSharedDataSource().getPoints().remove(mClickedPointItem);
                 break;
         }
     }
 
     public void setVisitedMarkers(String color, int index){
         if(color.equals("Red")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.red_visited_pin));
         }else if(color.equals("Green")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.green_visited_pin));
         }else if(color.equals("Blue")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.blue_visited_pin));
         }else if(color.equals("Yellow")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.yellow_visited_pin));
         }else if(color.equals("Aqua")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.aqua_visited_pin));
         }else if(color.equals("Magenta")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.magenta_visited_pin));
         }else{
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.visited_pin));
         }
     }
 
     public void setNonVisitedMarkers(String color, int index){
         if(color.equals("Red")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.red_pin));
         }else if(color.equals("Green")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.green_pin));
         }else if(color.equals("Blue")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.blue_pin));
         }else if(color.equals("Yellow")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.yellow_pin));
         }else if(color.equals("Aqua")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.aqua_pin));
         }else if(color.equals("Magenta")){
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.magenta_pin));
         }else{
-            mPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
+            mListPlaceMarkers.get(index).setIcon(BitmapDescriptorFactory
                     .fromResource(R.drawable.pin));
         }
     }
