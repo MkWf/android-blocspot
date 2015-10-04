@@ -170,7 +170,7 @@ public class DataSource {
                     }
                 }
 
-                if(!searchForCategory("All")) {
+                if (!searchForCategory("All")) {
                     new CategoryTable.Builder()
                             .setName("All")
                             .setColor(mContext.getResources().getString(R.string.categ_white))
@@ -260,6 +260,31 @@ public class DataSource {
         return true;
     }
 
+    public void searchForCategoryInBackground(final String category, final Callback<Boolean> callback){
+        final Handler callbackThreadHandler = new Handler();
+        submitTask(new Runnable() {
+            @Override
+            public void run() {
+                Cursor c = mWritableDatabase.query(mCategoryTable.getName(), null, "category_name = ?", new String[]{category}, null, null, null);
+                if (c.getCount() == 0) {
+                    callbackThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(false);
+                        }
+                    });
+                }else{
+                    callbackThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onSuccess(true);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     public boolean searchForColor(String color){
         Cursor c = mWritableDatabase.query(mCategoryTable.getName(), null, "category_color = ?", new String[]{color}, null, null, null);
         if(c.getCount() == 0){
@@ -285,11 +310,24 @@ public class DataSource {
                 .insert(mWritableDatabase);
     }
 
-    public void insertCategory(String category, String color){
-        new CategoryTable.Builder()
-                .setName(category)
-                .setColor(color)
-                .insert(mWritableDatabase);
+    public void insertCategory(final String category, final String color, final Callback<Void> callback){
+        final Handler callbackThreadHandler = new Handler();
+        submitTask(new Runnable() {
+            @Override
+            public void run() {
+                new CategoryTable.Builder()
+                        .setName(category)
+                        .setColor(color)
+                        .insert(mWritableDatabase);
+                callbackThreadHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess(null);
+                    }
+                });
+            }
+        });
+
         mCategories.add(new Category(category, color));
     }
 

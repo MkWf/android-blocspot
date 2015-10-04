@@ -255,24 +255,45 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                            newCateg.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
                                @Override
                                public void onClick(final DialogInterface dialog, int which) {
-                                   if(BlocSpotApplication.getSharedDataSource().searchForCategory(input.getText().toString())) {
-                                       Toast.makeText(getApplicationContext(), getString(R.string.category_already_exists), Toast.LENGTH_LONG).show();
-                                   }else if(input.getText().toString().isEmpty()){
-                                       Toast.makeText(getApplicationContext(), getString(R.string.enter_category_name), Toast.LENGTH_LONG).show();
-                                   }else{
-                                       for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
-                                           if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
-                                               continue;
-                                           }
-                                           else{
-                                               BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(), BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i));
-                                               mCategoryAdapter.add(input.getText().toString());
-                                               mCategoryAdapter.notifyDataSetChanged();
-                                               break;
+                                   BlocSpotApplication.getSharedDataSource().searchForCategoryInBackground(input.getText().toString(), new DataSource.Callback<Boolean>() {
+                                       @Override
+                                       public void onSuccess(Boolean categoryExists) {
+                                           if(categoryExists) {
+                                               Toast.makeText(getApplicationContext(), getString(R.string.category_already_exists), Toast.LENGTH_LONG).show();
+                                           }else if (input.getText().toString().isEmpty()) {
+                                               Toast.makeText(getApplicationContext(), getString(R.string.enter_category_name), Toast.LENGTH_LONG).show();
+                                           }else{
+                                               for(int i = 0; i<BlocSpotApplication.getSharedDataSource().getCategoryColors().size(); i++){
+                                                   if(BlocSpotApplication.getSharedDataSource().searchForColor(BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i))){
+                                                       //Do Nothing
+                                                   }
+                                                   else{
+                                                       BlocSpotApplication.getSharedDataSource().insertCategory(input.getText().toString(),
+                                                               BlocSpotApplication.getSharedDataSource().getCategoryColors().get(i),
+                                                               new DataSource.Callback<Void>() {
+                                                                   @Override
+                                                                   public void onSuccess(Void aVoid) {
+                                                                       mCategoryAdapter.add(input.getText().toString());
+                                                                       mCategoryAdapter.notifyDataSetChanged();
+                                                                   }
+
+                                                                   @Override
+                                                                   public void onError(String errorMessage) {
+
+                                                                   }
+                                                               });
+                                                       break;
+                                                   }
+                                               }
+                                               dialog.dismiss();
                                            }
                                        }
-                                       dialog.dismiss();
-                                   }
+
+                                       @Override
+                                       public void onError(String errorMessage) {
+
+                                       }
+                                   });
                                }
                            });
                            newCateg.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -284,7 +305,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
                            newCateg.show();
                        }
                    }
-               });
+                });
 
                 minus.setOnClickListener(new View.OnClickListener() {
                     @Override
