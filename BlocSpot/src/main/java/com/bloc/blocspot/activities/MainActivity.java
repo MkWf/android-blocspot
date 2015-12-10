@@ -3,6 +3,7 @@ package com.bloc.blocspot.activities;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -18,8 +19,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -56,7 +59,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     private int mClickedItemPosition;
     private RecyclerView mRecyclerView;
     private Toolbar mToolbar;
-    private ArrayAdapter<String> mCategoryAdapter;
+    private ColorAdapter mCategoryAdapter;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private int mCurrentCategFilter = 0;
@@ -66,7 +69,7 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mCategoryAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice);
+        mCategoryAdapter = new ColorAdapter(this, android.R.layout.select_dialog_singlechoice);
 
         mToolbar = (Toolbar) findViewById(R.id.tb_activity_main);
         setSupportActionBar(mToolbar);
@@ -410,5 +413,47 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
     @Override
     public void onLocationChanged(Location location) {
         BlocSpotApplication.getSharedDataSource().setLocation(location);
+    }
+
+    public class ColorAdapter extends ArrayAdapter<String> {
+
+        Context context;
+
+        public ColorAdapter(Context context, int resource) {
+            super(context, resource);
+            this.context = context;
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            CheckedTextView tv = (CheckedTextView) view;
+
+            switch (position) {
+                case 0:
+                    tv.setTextColor(context.getResources().getColor(R.color.white));
+                    break;
+                case 1:
+                    tv.setTextColor(context.getResources().getColor(R.color.red));
+                    break;
+                case 2:
+                    tv.setTextColor(context.getResources().getColor(R.color.green));
+                    break;
+                case 3:
+                    tv.setTextColor(context.getResources().getColor(R.color.blue));
+                    break;
+                case 4:
+                    tv.setTextColor(context.getResources().getColor(R.color.yellow));
+                    break;
+                case 5:
+                    tv.setTextColor(context.getResources().getColor(R.color.aqua));
+                    break;
+                case 6:
+                    tv.setTextColor(context.getResources().getColor(R.color.magenta));
+                    break;
+            }
+            return view;
+        }
     }
 }

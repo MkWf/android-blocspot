@@ -69,7 +69,7 @@ public class DataSource {
             @Override
             public void run() {
                 if (BuildConfig.DEBUG && false) {
-                    //BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
+                    BlocSpotApplication.getSharedInstance().deleteDatabase("blocspot_db");
                 }
             }
         }).start();
