@@ -430,29 +430,24 @@ public class MainActivity extends ActionBarActivity implements ItemAdapter.Deleg
             View view = super.getView(position, convertView, parent);
             CheckedTextView tv = (CheckedTextView) view;
 
-            switch (position) {
-                case 0:
-                    tv.setTextColor(context.getResources().getColor(R.color.white));
-                    break;
-                case 1:
-                    tv.setTextColor(context.getResources().getColor(R.color.red));
-                    break;
-                case 2:
-                    tv.setTextColor(context.getResources().getColor(R.color.green));
-                    break;
-                case 3:
-                    tv.setTextColor(context.getResources().getColor(R.color.blue));
-                    break;
-                case 4:
-                    tv.setTextColor(context.getResources().getColor(R.color.yellow));
-                    break;
-                case 5:
-                    tv.setTextColor(context.getResources().getColor(R.color.aqua));
-                    break;
-                case 6:
-                    tv.setTextColor(context.getResources().getColor(R.color.magenta));
-                    break;
+            String color = BlocSpotApplication.getSharedDataSource().getCategoryColor(tv.getText().toString());
+
+            if(color.equals(getResources().getString(R.string.categ_white))){
+                tv.setTextColor(context.getResources().getColor(R.color.white));
+            }else if(color.equals(getResources().getString(R.string.categ_white))){
+                tv.setTextColor(context.getResources().getColor(R.color.red));
+            }else if(color.equals(getResources().getString(R.string.categ_red))){
+                tv.setTextColor(context.getResources().getColor(R.color.green));
+            }else if(color.equals(getResources().getString(R.string.categ_blue))){
+                tv.setTextColor(context.getResources().getColor(R.color.blue));
+            }else if(color.equals(getResources().getString(R.string.categ_yellow))){
+                tv.setTextColor(context.getResources().getColor(R.color.yellow));
+            }else if(color.equals(getResources().getString(R.string.categ_aqua))){
+                tv.setTextColor(context.getResources().getColor(R.color.aqua));
+            }else if(color.equals(getResources().getString(R.string.categ_magenta))){
+                tv.setTextColor(context.getResources().getColor(R.color.magenta));
             }
+
             return view;
         }
     }
