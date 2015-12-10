@@ -1,16 +1,14 @@
-BlocSpot Template
+BlocSpot
 ================
 
-This is the template for the Android BlocSpot project.
+BlocSpot is an Android application that finds a user's position and locates nearby points of interest.
 
-## Import
+## Overview
 
-Importing the project in Android Studio…
+![alt text](https://i.gyazo.com/1211d042c8065148120f26994d621192.png)
 
-![alt text](https://bloc-global-assets.s3.amazonaws.com/images-android/android-studio-gifs/import-project.gif "Gif Demonstration Of Project Import")
 
-## Dependencies
+
+
 
 This project requires `Google Play Services` and the `Google Repository` extras be downloaded in your SDK manager.
-
-![alt text](https://bloc-global-assets.s3.amazonaws.com/images-android/android-studio-gifs/google-extras.gif "Download Extras")
